@@ -15,7 +15,12 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.Scanner;
+
+import de.flo_aumeier.popularmoviesstage2.model.Movie;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Provides methods for querying the themoviedb API.
@@ -23,7 +28,7 @@ import java.util.Scanner;
 public class NetworkUtils {
     private static String TAG = NetworkUtils.class.getSimpleName();
 
-    private static final String THEMOVIEDB_BASE_URL = "https://api.themoviedb.org/3/movie"; //EXAMPLE: https://api.themoviedb.org/3/movie/popular?api_key=[YOUR_API_KEY]&language=en-US&page=1
+    private static final String THEMOVIEDB_BASE_URL = "https://api.themoviedb.org/3/movie";
     private static final String API_KEY = "66c86590f283f43a95c4fff54da023dc";
 
     private static final String PARAM_POPULAR_MOVIES = "popular";
@@ -33,99 +38,6 @@ public class NetworkUtils {
     private static final String LANGUAGE = "en-US";
     private static final String PARAM_PAGE = "page";
     private static final String PARAM_IMAGES = "images";
-
-    /**
-     * Builds a URL to query for the most popular movies.
-     * @return
-     */
-    public static URL buildUrlPopularMovies() {
-        Uri builtUri = Uri.parse(THEMOVIEDB_BASE_URL).buildUpon()
-                .appendEncodedPath(PARAM_POPULAR_MOVIES)
-                .appendQueryParameter(PARAM_API_KEY, API_KEY)
-                .appendQueryParameter(PARAM_LANGUAGE, LANGUAGE)
-                .appendQueryParameter(PARAM_PAGE, "1")
-                .build();
-        URL url = null;
-        try {
-            url = new URL(builtUri.toString());
-            Log.d(TAG, "Built URL: " + url);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
-        return url;
-    }
-
-    /**
-     * Builds a URL to query for the best rated movies.
-     * @return
-     */
-    public static URL buildUrlBestRatedMovies() {
-        Uri builtUri = Uri.parse(THEMOVIEDB_BASE_URL).buildUpon()
-                .appendEncodedPath(PARAM_BEST_RATED_MOVIES)
-                .appendQueryParameter(PARAM_API_KEY, API_KEY)
-                .appendQueryParameter(PARAM_LANGUAGE, LANGUAGE)
-                .appendQueryParameter(PARAM_PAGE, "1")
-                .build();
-        URL url = null;
-        try {
-            url = new URL(builtUri.toString());
-            Log.d(TAG, "Built URL: " + url);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
-        return url;
-    }
-
-    /**
-     * Builds a URL to query for a movie still image from a specified movie.
-     * @param movieId the ID of the movie for the still image.
-     * @return
-     */
-    public static URL buildUrlMovieStills(String movieId) {
-        Uri builtUri = Uri.parse(THEMOVIEDB_BASE_URL).buildUpon()
-                .appendEncodedPath(movieId)
-                .appendEncodedPath(PARAM_IMAGES)
-                .appendQueryParameter(PARAM_API_KEY, API_KEY)
-                .build();
-        URL url = null;
-        try {
-            url = new URL(builtUri.toString());
-            Log.d(TAG, "Built URL: " + url);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
-        return url;
-    }
-
-    /**
-     * This method returns the entire result from the HTTP response.
-     *
-     * @param url The URL to fetch the HTTP response from.
-     * @return The contents of the HTTP response.
-     * @throws IOException Related to network and stream reading
-     */
-    @Deprecated
-    public static String getResponseFromHttpUrl(URL url) throws IOException {
-        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        try {
-            InputStream in = urlConnection.getInputStream();
-
-            Scanner scanner = new Scanner(in);
-            scanner.useDelimiter("\\A");
-
-            boolean hasInput = scanner.hasNext();
-            if (hasInput) {
-                return scanner.next();
-            } else {
-                return null;
-            }
-        } finally {
-            urlConnection.disconnect();
-        }
-    }
 
     /**
      * Checks if the user has currently a connection to the internet.
