@@ -7,7 +7,8 @@
     android:layout_height="match_parent"
     tools:context="de.flo_aumeier.popularmoviesstage2.MovieActivity"
     android:fitsSystemWindows="true">
-    <!-- TODO: Movie details layout contains title, release date, movie poster, vote average, and plot synopsis. -->
+    <!-- TODO (2): Movie Details layout contains a section for displaying trailer videos and user
+    reviews. -->
     <!-- https://medium.com/google-developers/why-would-i-want-to-fitssystemwindows-4e26d9ce1eec#.yty230lqz -->
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"

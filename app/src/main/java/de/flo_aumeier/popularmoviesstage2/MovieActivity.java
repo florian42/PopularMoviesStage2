@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
@@ -22,6 +23,12 @@ import de.flo_aumeier.popularmoviesstage2.model.Movie;
 /*
 * Displays detailed information for a specific movie.
 */
+//TODO: When a trailer is selected, app uses an Intent to launch the trailer.
+//TODO: In the movies detail screen, a user can tap a button(for example, a star) to mark it as a Favorite.
+//TODO (2): App requests for related videos for a selected movie via the /movie/{id}/videos endpoint
+// in a background thread and displays those details when the user selects a movie.
+//TODO (3): App requests for user reviews for a selected movie via the /movie/{id}/reviews endpoint
+// in a background thread and displays those details when the user selects a movie.
 public class MovieActivity extends AppCompatActivity {
     private static final String TAG = MovieActivity.class.getSimpleName();
 
@@ -78,7 +85,10 @@ public class MovieActivity extends AppCompatActivity {
     private void setupActionBar() {
         // Set the support action bar
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = this.getSupportActionBar();
+        if (null == actionBar) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     private void getXMLReferences() {
