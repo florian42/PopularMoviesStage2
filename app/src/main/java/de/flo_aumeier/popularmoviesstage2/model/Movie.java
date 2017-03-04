@@ -7,29 +7,58 @@ import java.util.Map;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 public class Movie implements Parcelable
 {
-
+    @SerializedName("poster_path")
+    @Expose
     private String posterPath;
+    @SerializedName("adult")
+    @Expose
     private Boolean adult;
+    @SerializedName("overview")
+    @Expose
     private String overview;
+    @SerializedName("release_date")
+    @Expose
     private String releaseDate;
+    @SerializedName("genre_ids")
+    @Expose
     private List<Integer> genreIds = null;
+    @SerializedName("id")
+    @Expose
     private Integer id;
+    @SerializedName("original_title")
+    @Expose
     private String originalTitle;
+    @SerializedName("original_language")
+    @Expose
     private String originalLanguage;
+    @SerializedName("title")
+    @Expose
     private String title;
+    @SerializedName("backdrop_path")
+    @Expose
     private String backdropPath;
+    @SerializedName("popularity")
+    @Expose
     private Double popularity;
+    @SerializedName("vote_count")
+    @Expose
     private Integer voteCount;
+    @SerializedName("video")
+    @Expose
     private Boolean video;
+    @SerializedName("vote_average")
+    @Expose
     private Double voteAverage;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-    public final static Creator<Movie> CREATOR = new Creator<Movie>() {
+    public final static Parcelable.Creator<Movie> CREATOR = new Creator<Movie>() {
 
 
         @SuppressWarnings({
-            "unchecked"
+                "unchecked"
         })
         public Movie createFromParcel(Parcel in) {
             Movie instance = new Movie();
@@ -37,7 +66,7 @@ public class Movie implements Parcelable
             instance.adult = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
             instance.overview = ((String) in.readValue((String.class.getClassLoader())));
             instance.releaseDate = ((String) in.readValue((String.class.getClassLoader())));
-            in.readList(instance.genreIds, (Integer.class.getClassLoader()));
+            in.readList(instance.genreIds, (java.lang.Integer.class.getClassLoader()));
             instance.id = ((Integer) in.readValue((Integer.class.getClassLoader())));
             instance.originalTitle = ((String) in.readValue((String.class.getClassLoader())));
             instance.originalLanguage = ((String) in.readValue((String.class.getClassLoader())));
@@ -47,7 +76,6 @@ public class Movie implements Parcelable
             instance.voteCount = ((Integer) in.readValue((Integer.class.getClassLoader())));
             instance.video = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
             instance.voteAverage = ((Double) in.readValue((Double.class.getClassLoader())));
-            instance.additionalProperties = ((Map<String, Object> ) in.readValue((Map.class.getClassLoader())));
             return instance;
         }
 
@@ -56,7 +84,49 @@ public class Movie implements Parcelable
         }
 
     }
-    ;
+            ;
+
+    /**
+     * No args constructor for use in serialization
+     *
+     */
+    public Movie() {
+    }
+
+    /**
+     *
+     * @param id
+     * @param genreIds
+     * @param title
+     * @param releaseDate
+     * @param overview
+     * @param posterPath
+     * @param originalTitle
+     * @param voteAverage
+     * @param originalLanguage
+     * @param adult
+     * @param backdropPath
+     * @param voteCount
+     * @param video
+     * @param popularity
+     */
+    public Movie(String posterPath, Boolean adult, String overview, String releaseDate, List<Integer> genreIds, Integer id, String originalTitle, String originalLanguage, String title, String backdropPath, Double popularity, Integer voteCount, Boolean video, Double voteAverage) {
+        super();
+        this.posterPath = posterPath;
+        this.adult = adult;
+        this.overview = overview;
+        this.releaseDate = releaseDate;
+        this.genreIds = genreIds;
+        this.id = id;
+        this.originalTitle = originalTitle;
+        this.originalLanguage = originalLanguage;
+        this.title = title;
+        this.backdropPath = backdropPath;
+        this.popularity = popularity;
+        this.voteCount = voteCount;
+        this.video = video;
+        this.voteAverage = voteAverage;
+    }
 
     public String getPosterPath() {
         return posterPath;
@@ -240,20 +310,6 @@ public class Movie implements Parcelable
         return this;
     }
 
-
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
-
-    public Movie withAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-        return this;
-    }
-
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(posterPath);
         dest.writeValue(adult);
@@ -269,11 +325,9 @@ public class Movie implements Parcelable
         dest.writeValue(voteCount);
         dest.writeValue(video);
         dest.writeValue(voteAverage);
-        dest.writeValue(additionalProperties);
     }
 
     public int describeContents() {
-        return  0;
+        return 0;
     }
-
 }

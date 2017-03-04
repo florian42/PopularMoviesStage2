@@ -11,9 +11,9 @@ public interface TmdbApiEndpointInterface {
     public static final String BASE_URL = "https://api.themoviedb.org/3/movie/";
 
     @GET("popular?api_key=66c86590f283f43a95c4fff54da023dc&language=en-US&page=1")
-    Call<Movie> getPopularMoviesPage1();
+    Call<Page> getPopularMoviesPage1();
 
     @GET("top_rated?api_key=66c86590f283f43a95c4fff54da023dc&language=en-US&page=1")
-    Call<Movie> getBestRatedMoviesPage1();
+    Call<Page> getBestRatedMoviesPage1();
 }
 

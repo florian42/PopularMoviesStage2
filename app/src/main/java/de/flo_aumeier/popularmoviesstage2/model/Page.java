@@ -7,27 +7,36 @@ import java.util.Map;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 public class Page implements Parcelable
 {
 
+    @SerializedName("page")
+    @Expose
     private Integer page;
+    @SerializedName("results")
+    @Expose
     private List<Movie> results = null;
-    private Integer totalResults;
+    @SerializedName("total_results")
+    @Expose
+    private Integer totalMovies;
+    @SerializedName("total_pages")
+    @Expose
     private Integer totalPages;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-    public final static Creator<Page> CREATOR = new Creator<Page>() {
+    public final static Parcelable.Creator<Page> CREATOR = new Creator<Page>() {
 
 
         @SuppressWarnings({
-            "unchecked"
+                "unchecked"
         })
         public Page createFromParcel(Parcel in) {
             Page instance = new Page();
             instance.page = ((Integer) in.readValue((Integer.class.getClassLoader())));
             in.readList(instance.results, (Movie.class.getClassLoader()));
-            instance.totalResults = ((Integer) in.readValue((Integer.class.getClassLoader())));
+            instance.totalMovies = ((Integer) in.readValue((Integer.class.getClassLoader())));
             instance.totalPages = ((Integer) in.readValue((Integer.class.getClassLoader())));
-            instance.additionalProperties = ((Map<String, Object> ) in.readValue((Map.class.getClassLoader())));
             return instance;
         }
 
@@ -36,7 +45,29 @@ public class Page implements Parcelable
         }
 
     }
-    ;
+            ;
+
+    /**
+     * No args constructor for use in serialization
+     *
+     */
+    public Page() {
+    }
+
+    /**
+     *
+     * @param results
+     * @param totalMovies
+     * @param page
+     * @param totalPages
+     */
+    public Page(Integer page, List<Movie> results, Integer totalMovies, Integer totalPages) {
+        super();
+        this.page = page;
+        this.results = results;
+        this.totalMovies = totalMovies;
+        this.totalPages = totalPages;
+    }
 
     public Integer getPage() {
         return page;
@@ -51,29 +82,29 @@ public class Page implements Parcelable
         return this;
     }
 
-    public List<Movie> getResults() {
+    public List<Movie> getMovies() {
         return results;
     }
 
-    public void setResults(List<Movie> results) {
+    public void setMovies(List<Movie> results) {
         this.results = results;
     }
 
-    public Page withResults(List<Movie> results) {
+    public Page withMovies(List<Movie> results) {
         this.results = results;
         return this;
     }
 
-    public Integer getTotalResults() {
-        return totalResults;
+    public Integer getTotalMovies() {
+        return totalMovies;
     }
 
-    public void setTotalResults(Integer totalResults) {
-        this.totalResults = totalResults;
+    public void setTotalMovies(Integer totalMovies) {
+        this.totalMovies = totalMovies;
     }
 
-    public Page withTotalResults(Integer totalResults) {
-        this.totalResults = totalResults;
+    public Page withTotalMovies(Integer totalMovies) {
+        this.totalMovies = totalMovies;
         return this;
     }
 
@@ -90,29 +121,15 @@ public class Page implements Parcelable
         return this;
     }
 
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
-
-    public Page withAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-        return this;
-    }
-
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(page);
         dest.writeList(results);
-        dest.writeValue(totalResults);
+        dest.writeValue(totalMovies);
         dest.writeValue(totalPages);
-        dest.writeValue(additionalProperties);
     }
 
     public int describeContents() {
-        return  0;
+        return 0;
     }
 
 }

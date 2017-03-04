@@ -12,7 +12,9 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.util.LinkedList;
+import java.util.List;
 
+import de.flo_aumeier.popularmoviesstage2.model.Movie;
 import de.flo_aumeier.popularmoviesstage2.model.Page;
 
 /**
@@ -22,16 +24,11 @@ import de.flo_aumeier.popularmoviesstage2.model.Page;
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.PosterViewHolder> {
     private static final String TAG = MovieAdapter.class.getSimpleName();
 
-    /**
-     * Holding duplicate links to the interstellar poster
-     * used for testing the recyclerview
-     */
-
     final private ListItemClickListener mOnClickListener;
 
-    private LinkedList<Page> mMovies;
+    private List<Movie> mMovies;
 
-    public MovieAdapter(ListItemClickListener onClickListener, LinkedList<Page> movieList) {
+    public MovieAdapter(ListItemClickListener onClickListener, List<Movie> movieList) {
         mOnClickListener = onClickListener;
         mMovies = movieList;
     }
@@ -75,17 +72,15 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.PosterViewHo
             itemView.setOnClickListener(this);
         }
 
-        void bind(Page movie) {
-            String basePosterURL = "https://image.tmdb.org/t/p/w185/";
-            String posterPath = movie.getResults(); //TODO (3): You need a way to specifiy which
+        void bind(Movie movie) {
+            final String basePosterURL = "https://image.tmdb.org/t/p/w185/";
+            final String posterPath = movie.getPosterPath();
             // movie was clicked.
-            String completeUrl = basePosterURL + posterPath;
+            final String completeUrl = basePosterURL + posterPath;
             Log.d(TAG, "Loading Poster: " + completeUrl);
             Picasso.with(mContext)
                     .load(completeUrl)
                     .into(mPosterImageView);
-            Log.d(TAG, "Setting title: " + movie.getTitle());
-            mMovieTitle.setText(movie.getTitle());
         }
 
         @Override
@@ -95,7 +90,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.PosterViewHo
         }
     }
 
-    public LinkedList<Page> getMovies() {
+    public List<Movie> getMovies() {
         return mMovies;
     }
 }
