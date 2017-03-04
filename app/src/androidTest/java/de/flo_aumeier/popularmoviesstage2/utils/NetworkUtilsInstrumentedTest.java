@@ -27,35 +27,4 @@ public class NetworkUtilsInstrumentedTest {
 
         assertEquals("de.flo_aumeier.popularmoviesstage2", appContext.getPackageName());
     }
-
-    private static final String messageURLdoesntMatch = "URL doesn't match";
-
-    @Test
-    public void buildUrlPopularMovies() throws Exception {
-        final URL expectedUrl = new URL(
-                "https://api.themoviedb"
-                        + ".org/3/movie/popular?api_key=66c86590f283f43a95c4fff54da023dc&language"
-                        + "=en-US&page=1");
-        final URL actualUrl = NetworkUtils.buildUrlPopularMovies();
-        assertEquals(messageURLdoesntMatch, expectedUrl, actualUrl);
-    }
-
-    @Test
-    public void buildUrlBestRatedMovies() throws Exception {
-        final URL expectedUrl = new URL(
-                "https://api.themoviedb"
-                        + ".org/3/movie/top_rated?api_key=66c86590f283f43a95c4fff54da023dc"
-                        + "&language=en-US&page=1");
-        final URL actualUrl = NetworkUtils.buildUrlBestRatedMovies();
-        assertEquals(messageURLdoesntMatch, expectedUrl, actualUrl);
-    }
-
-    @Test
-    public void buildUrlMovieStills() throws Exception {
-        final URL expectedUrl = new URL(
-                "https://api.themoviedb"
-                        + ".org/3/movie/372058/images?api_key=66c86590f283f43a95c4fff54da023dc");
-        final URL actualUrl = NetworkUtils.buildUrlMovieStills("372058");
-        assertEquals(messageURLdoesntMatch, expectedUrl, actualUrl);
-    }
 }
