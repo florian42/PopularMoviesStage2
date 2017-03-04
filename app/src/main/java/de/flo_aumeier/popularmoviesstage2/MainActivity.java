@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -83,7 +84,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
     @Override
     public void onListItemClick(int clickedItemIndex) {
         final Movie clickedMovie = mMovies.get(clickedItemIndex);
+        Toast.makeText(this, "Clicked: #" + clickedItemIndex, Toast.LENGTH_SHORT).show();
         Intent startMovieActivityIntent = new Intent(this, MovieActivity.class);
         startMovieActivityIntent.putExtra(INTENT_EXTRA_MOVIE, clickedMovie);
+        startActivity(startMovieActivityIntent);
     }
 }

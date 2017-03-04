@@ -1,6 +1,7 @@
 
 package de.flo_aumeier.popularmoviesstage2.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +67,7 @@ public class Movie implements Parcelable
             instance.adult = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
             instance.overview = ((String) in.readValue((String.class.getClassLoader())));
             instance.releaseDate = ((String) in.readValue((String.class.getClassLoader())));
+            instance.setGenreIds(new ArrayList<Integer>());
             in.readList(instance.genreIds, (java.lang.Integer.class.getClassLoader()));
             instance.id = ((Integer) in.readValue((Integer.class.getClassLoader())));
             instance.originalTitle = ((String) in.readValue((String.class.getClassLoader())));
@@ -83,8 +85,7 @@ public class Movie implements Parcelable
             return (new Movie[size]);
         }
 
-    }
-            ;
+    };
 
     /**
      * No args constructor for use in serialization
