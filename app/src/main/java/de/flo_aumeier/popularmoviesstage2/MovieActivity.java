@@ -3,6 +3,7 @@ package de.flo_aumeier.popularmoviesstage2;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -31,11 +32,13 @@ import de.flo_aumeier.popularmoviesstage2.model.Movie;
 // in a background thread and displays those details when the user selects a movie.
 //TODO (3): App requests for user reviews for a selected movie via the /movie/{id}/reviews endpoint
 // in a background thread and displays those details when the user selects a movie.
-public class MovieActivity extends AppCompatActivity {
+public class MovieActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener {
     private static final String TAG = MovieActivity.class.getSimpleName();
 
-    private Movie mMovie;
+    private static final float THRESHOLD_PERCENTAGE = 0.2F;
 
+    private Movie mMovie;
+    private AppBarLayout mAppBarLayout;
     private Context mContext;
     private Activity mActivity;
     private CoordinatorLayout mCLayout;
@@ -62,7 +65,8 @@ public class MovieActivity extends AppCompatActivity {
         // Get the application context
         mContext = getApplicationContext();
         mActivity = MovieActivity.this;
-
+        mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
+        mAppBarLayout.addOnOffsetChangedListener(this);
         mMovie = getIntent().getParcelableExtra(MainActivity.INTENT_EXTRA_MOVIE);
         if (null == mMovie) {
             throw new NullPointerException("ParcelableExtra is null");
@@ -117,4 +121,24 @@ public class MovieActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+        //int maxScroll = appBarLayout.getTotalScrollRange();
+        //float progressPercentage = (float) (Math.abs(offset)/maxScroll);
+
+        if (verticalOffset == 0) {
+            //start an alpha animation on your ImageView here (i.e. fade out)
+            mMoviePoster.animate().alpha(1f).setDuration(200l).setListener(null);
+        } else {
+            mMoviePoster.animate().alpha(0f).setDuration(200l).setListener(null);
+            //Add an opposite animation here (i.e. it fades back in again)
+        }
+/*        if (verticalOffset == 0) {
+            //mMoviePoster.setVisibility(View.VISIBLE);
+        } else {
+            //mMoviePoster.setAnimation(fadeOut);
+            //
+            //mMoviePoster.setVisibility(View.INVISIBLE);
+        }*/
+    }
 }
