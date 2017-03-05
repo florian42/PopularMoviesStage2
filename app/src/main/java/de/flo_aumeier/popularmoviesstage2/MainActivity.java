@@ -37,12 +37,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
 
     private MovieAdapter mPopularMoviesAdapter;
     private MovieAdapter mBestRatedMoviesAdapter;
-    private List<Movie> mPopularMovies;
+    private List<Movie> mMovies;
     private MainActivity mActivity;
 
     private RecyclerView mRecyclerView;
-    private Toolbar mToolbar;
-    private List<Movie> mBestRatedMovies;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
                 spanCount);
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setHasFixedSize(true);
-        fetchPopularMovies();
+        //fetchPopularMovies(); Überflüssig passiert durch die Settings
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         setSortOrder(sharedPreferences.getBoolean(getString(R.string.pref_short_sort_order),
                 getResources().getBoolean(R.bool.pref_sort_order_default)));
@@ -71,41 +69,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
 
-    public void fetchPopularMovies() {
-        Log.d(TAG, "Fetching Popular Movies");
-        Gson gson = new GsonBuilder().setLenient().create();
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(TmdbApiEndpointInterface.BASE_URL)
-                .addConverterFactory
-                        (GsonConverterFactory.create(gson))
-                .build();
-        TmdbApiEndpointInterface endpointInterface = retrofit.create(TmdbApiEndpointInterface.class);
-        Call<Page> call = endpointInterface.getPopularMoviesPage1();
-        call.enqueue(new Callback<Page>() {
-            @Override
-            public void onResponse(Call<Page> call, Response<Page> response) {
-                if (response.isSuccessful()) {
-                    Page popularMovies = response.body();
-                    mPopularMovies = popularMovies.getMovies();
-                    mPopularMoviesAdapter = new MovieAdapter(mActivity, mPopularMovies);
-                    mRecyclerView.setAdapter(mPopularMoviesAdapter);
-                } else {
-                    Log.d(TAG, response.errorBody().toString());
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<Page> call, Throwable t) {
-                Log.d(TAG, t.getMessage());
-            }
-
-
-        });
-    }
-
     @Override
     public void onListItemClick(int clickedItemIndex) {
-        final Movie clickedMovie = mPopularMovies.get(clickedItemIndex);
+        final Movie clickedMovie = mMovies.get(clickedItemIndex);
         Toast.makeText(this, "Clicked: #" + clickedItemIndex, Toast.LENGTH_SHORT).show();
         Intent startMovieActivityIntent = new Intent(this, MovieActivity.class);
         startMovieActivityIntent.putExtra(INTENT_EXTRA_MOVIE, clickedMovie);
@@ -142,6 +108,44 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
         }
     }
 
+    public void fetchPopularMovies() {
+        Log.d(TAG, "Fetching Popular Movies");
+        Gson gson = new GsonBuilder().setLenient().create();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(TmdbApiEndpointInterface.BASE_URL)
+                .addConverterFactory
+                        (GsonConverterFactory.create(gson))
+                .build();
+        TmdbApiEndpointInterface endpointInterface = retrofit.create(TmdbApiEndpointInterface.class);
+        Call<Page> call = endpointInterface.getPopularMoviesPage1();
+        call.enqueue(new Callback<Page>() {
+            @Override
+            public void onResponse(Call<Page> call, Response<Page> response) {
+                if (response.isSuccessful()) {
+                    Page popularMovies = response.body();
+                    mMovies = popularMovies.getMovies();
+                    if (null == mPopularMoviesAdapter) {
+                        mPopularMoviesAdapter = new MovieAdapter(mActivity, mMovies);
+                    }
+                    if (mRecyclerView.getAdapter() == null) {
+                        mRecyclerView.setAdapter(mPopularMoviesAdapter);
+                    } else {
+                        mRecyclerView.swapAdapter(mPopularMoviesAdapter, false);
+                    }
+                } else {
+                    Log.d(TAG, response.errorBody().toString());
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Page> call, Throwable t) {
+                Log.d(TAG, t.getMessage());
+            }
+
+
+        });
+    }
+
     /**
      * Sets the sortOrder to best Rated if sortOrderBestRated = true
      *
@@ -150,21 +154,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
     private void setSortOrder(Boolean sortOrderBestRated) {
         Log.d(TAG, "Sorting Best Rated Movies: " + sortOrderBestRated);
         if (sortOrderBestRated) {
-            if (null == mBestRatedMovies || mBestRatedMovies.isEmpty()) {
-                fetchBestRatedMovies();
-            }
-            if (null != mBestRatedMoviesAdapter) {
-                mBestRatedMoviesAdapter = new MovieAdapter(this, mBestRatedMovies);
-            }
-            mRecyclerView.swapAdapter(mBestRatedMoviesAdapter, false);
+            fetchBestRatedMovies();
         } else {
-            if (null == mPopularMovies || mPopularMovies.isEmpty()) {
-                fetchPopularMovies();
-            }
-            if (null == mPopularMoviesAdapter) {
-                mPopularMoviesAdapter = new MovieAdapter(this, mPopularMovies);
-            }
-            mRecyclerView.swapAdapter(mPopularMoviesAdapter, false);
+            fetchPopularMovies();
         }
     }
 
@@ -183,9 +175,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
             public void onResponse(Call<Page> call, Response<Page> response) {
                 if (response.isSuccessful()) {
                     Page bestRatedMoviesPage = response.body();
-                    mBestRatedMovies = bestRatedMoviesPage.getMovies();
-                    mBestRatedMoviesAdapter = new MovieAdapter(mActivity, mBestRatedMovies);
-                    mRecyclerView.setAdapter(mBestRatedMoviesAdapter);
+                    mMovies = bestRatedMoviesPage.getMovies();
+                    if (null == mBestRatedMoviesAdapter) {
+                        mBestRatedMoviesAdapter = new MovieAdapter(mActivity, mMovies);
+                    }
+                    if (mRecyclerView.getAdapter() == null) {
+                        mRecyclerView.setAdapter(mBestRatedMoviesAdapter);
+                    } else {
+                        mRecyclerView.swapAdapter(mBestRatedMoviesAdapter, false);
+                    }
                 } else {
                     Log.d(TAG, response.errorBody().toString());
                 }

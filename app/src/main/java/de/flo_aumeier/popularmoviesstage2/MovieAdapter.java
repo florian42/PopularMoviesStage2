@@ -22,7 +22,7 @@ import de.flo_aumeier.popularmoviesstage2.model.Movie;
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.PosterViewHolder> {
     private static final String TAG = MovieAdapter.class.getSimpleName();
 
-    final private ListItemClickListener mOnClickListener;
+    private ListItemClickListener mOnClickListener;
 
     private List<Movie> mMovies;
 
@@ -50,7 +50,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.PosterViewHo
 
     @Override
     public int getItemCount() {
-        return mMovies.size();
+        return mMovies.size(); //Ist null wenn man von MovieActivity zurückgeht.
     }
 
     public List<Movie> getMovies() {
