@@ -53,6 +53,7 @@ public class MovieActivity extends AppCompatActivity {
      */
     private Snackbar mErrorSnackBar;
 
+    //TODO: Fix Title in CollapsingToolbar
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -1,9 +1,10 @@
 package de.flo_aumeier.popularmoviesstage2;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -16,30 +17,32 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.util.LinkedList;
 import java.util.List;
 
-
-import de.flo_aumeier.popularmoviesstage2.model.Page;
 import de.flo_aumeier.popularmoviesstage2.model.Movie;
+import de.flo_aumeier.popularmoviesstage2.model.Page;
 import de.flo_aumeier.popularmoviesstage2.model.TmdbApiEndpointInterface;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-// TODO (1): When a user changes the sort criteria (most popular, highest rated, and favorites) the
-// main view gets updated correctly.
-public class MainActivity extends AppCompatActivity implements MovieAdapter.ListItemClickListener {
+
+public class MainActivity extends AppCompatActivity implements MovieAdapter
+        .ListItemClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
     public static final String INTENT_EXTRA_MOVIE = "EXTRA_MOVIE";
 
     private MovieAdapter mPopularMoviesAdapter;
-    private List<Movie> mMovies;
+    private MovieAdapter mBestRatedMoviesAdapter;
+    private List<Movie> mPopularMovies;
     private MainActivity mActivity;
 
     private RecyclerView mRecyclerView;
     private Toolbar mToolbar;
+    private List<Movie> mBestRatedMovies;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +58,21 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setHasFixedSize(true);
         fetchPopularMovies();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        setSortOrder(sharedPreferences.getBoolean(getString(R.string.pref_short_sort_order),
+                getResources().getBoolean(R.bool.pref_sort_order_default)));
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     public void fetchPopularMovies() {
-        Log.d(TAG, "Calling API");
+        Log.d(TAG, "Fetching Popular Movies");
         Gson gson = new GsonBuilder().setLenient().create();
         Retrofit retrofit = new Retrofit.Builder().baseUrl(TmdbApiEndpointInterface.BASE_URL)
                 .addConverterFactory
@@ -71,9 +85,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
             public void onResponse(Call<Page> call, Response<Page> response) {
                 if (response.isSuccessful()) {
                     Page popularMovies = response.body();
-                    mMovies = popularMovies.getMovies();
-                    Log.d(TAG, mMovies.get(1).toString());
-                    mPopularMoviesAdapter = new MovieAdapter(mActivity, mMovies);
+                    mPopularMovies = popularMovies.getMovies();
+                    mPopularMoviesAdapter = new MovieAdapter(mActivity, mPopularMovies);
                     mRecyclerView.setAdapter(mPopularMoviesAdapter);
                 } else {
                     Log.d(TAG, response.errorBody().toString());
@@ -92,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
 
     @Override
     public void onListItemClick(int clickedItemIndex) {
-        final Movie clickedMovie = mMovies.get(clickedItemIndex);
+        final Movie clickedMovie = mPopularMovies.get(clickedItemIndex);
         Toast.makeText(this, "Clicked: #" + clickedItemIndex, Toast.LENGTH_SHORT).show();
         Intent startMovieActivityIntent = new Intent(this, MovieActivity.class);
         startMovieActivityIntent.putExtra(INTENT_EXTRA_MOVIE, clickedMovie);
@@ -118,5 +131,74 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(R.string.pref_short_sort_order)) {
+            Boolean sortBestRated = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool
+                    .pref_sort_order_default));
+            setSortOrder(sortBestRated);
+        }
+    }
+
+    /**
+     * Sets the sortOrder to best Rated if sortOrderBestRated = true
+     *
+     * @param sortOrderBestRated
+     */
+    private void setSortOrder(Boolean sortOrderBestRated) {
+        Log.d(TAG, "Sorting Best Rated Movies: " + sortOrderBestRated);
+        if (sortOrderBestRated) {
+            if (null == mBestRatedMovies || mBestRatedMovies.isEmpty()) {
+                fetchBestRatedMovies();
+            }
+            if (null != mBestRatedMoviesAdapter) {
+                mBestRatedMoviesAdapter = new MovieAdapter(this, mBestRatedMovies);
+            }
+            mRecyclerView.swapAdapter(mBestRatedMoviesAdapter, false);
+        } else {
+            if (null == mPopularMovies || mPopularMovies.isEmpty()) {
+                fetchPopularMovies();
+            }
+            if (null == mPopularMoviesAdapter) {
+                mPopularMoviesAdapter = new MovieAdapter(this, mPopularMovies);
+            }
+            mRecyclerView.swapAdapter(mPopularMoviesAdapter, false);
+        }
+    }
+
+    private void fetchBestRatedMovies() {
+        LinkedList<Movie> fetchedMovies = null;
+        Log.d(TAG, "Fetching Best Rated Movies");
+        Gson gson = new GsonBuilder().setLenient().create();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(TmdbApiEndpointInterface.BASE_URL)
+                .addConverterFactory
+                        (GsonConverterFactory.create(gson))
+                .build();
+        TmdbApiEndpointInterface endpointInterface = retrofit.create(TmdbApiEndpointInterface.class);
+        Call<Page> call = endpointInterface.getBestRatedMoviesPage1();
+        call.enqueue(new Callback<Page>() {
+            @Override
+            public void onResponse(Call<Page> call, Response<Page> response) {
+                if (response.isSuccessful()) {
+                    Page bestRatedMoviesPage = response.body();
+                    mBestRatedMovies = bestRatedMoviesPage.getMovies();
+                    mBestRatedMoviesAdapter = new MovieAdapter(mActivity, mBestRatedMovies);
+                    mRecyclerView.setAdapter(mBestRatedMoviesAdapter);
+                } else {
+                    Log.d(TAG, response.errorBody().toString());
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Page> call, Throwable t) {
+                Log.d(TAG, t.getMessage());
+            }
+
+
+        });
+
     }
 }
