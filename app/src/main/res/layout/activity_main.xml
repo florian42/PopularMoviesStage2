@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                             xmlns:tools="http://schemas.android.com/tools"
-                                             android:id="@+id/activity_main"
-                                             tools:context="de.flo_aumeier.popularmoviesstage2.MainActivity"
-                                             android:layout_width="match_parent"
-    android:layout_height="match_parent">
-<!-- TODO (1): UI contains an element (e.g., a spinner or settings menu) to toggle the sort order of
-the movies by: most popular, highest rated. -->
+             xmlns:tools="http://schemas.android.com/tools"
+             android:id="@+id/activity_main"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="de.flo_aumeier.popularmoviesstage2.MainActivity">
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_movies"
-        android:clipToPadding="false"
-        android:layout_height="match_parent"
         android:layout_width="match_parent"
-        tools:layout_editor_absoluteY="8dp"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingTop="?actionBarSize"
         tools:layout_editor_absoluteX="8dp"
-        android:paddingTop="?actionBarSize">
+        tools:layout_editor_absoluteY="8dp">
     </android.support.v7.widget.RecyclerView>
 
     <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"

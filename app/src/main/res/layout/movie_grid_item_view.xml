@@ -2,12 +2,12 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="wrap_content">
-    <!-- TODO: Redo this view -->
+
     <ImageView
         android:id="@+id/iv_movie_poster"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scaleType="fitStart"
-        android:adjustViewBounds="true"/>
+        android:adjustViewBounds="true"
+        android:scaleType="fitStart"/>
 
 </FrameLayout>

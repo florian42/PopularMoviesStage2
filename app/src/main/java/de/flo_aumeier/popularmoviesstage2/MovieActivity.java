@@ -53,7 +53,7 @@ public class MovieActivity extends AppCompatActivity {
      */
     private Snackbar mErrorSnackBar;
 
-    //TODO: Fix Title in CollapsingToolbar
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +91,7 @@ public class MovieActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if (null != actionBar) {
             actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(mMovie.getTitle());
         }
     }
 

@@ -11,16 +11,14 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import de.flo_aumeier.popularmoviesstage2.model.Movie;
-import de.flo_aumeier.popularmoviesstage2.model.Page;
 
 /**
  * Created by Society on 22.01.2017.
  */
-//TODO (1): Adapt to retrofit
+
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.PosterViewHolder> {
     private static final String TAG = MovieAdapter.class.getSimpleName();
 
@@ -31,10 +29,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.PosterViewHo
     public MovieAdapter(ListItemClickListener onClickListener, List<Movie> movieList) {
         mOnClickListener = onClickListener;
         mMovies = movieList;
-    }
-
-    public interface ListItemClickListener {
-        void onListItemClick(int clickedItemIndex);
     }
 
     @Override
@@ -59,12 +53,20 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.PosterViewHo
         return mMovies.size();
     }
 
+    public List<Movie> getMovies() {
+        return mMovies;
+    }
+
+    public interface ListItemClickListener {
+        void onListItemClick(int clickedItemIndex);
+    }
+
     class PosterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private ImageView mPosterImageView;
         private TextView mMovieTitle;
         private Context mContext;
-        //TODO (2): Adapt to new View
+
         public PosterViewHolder(View itemView) {
             super(itemView);
             mContext = itemView.getContext();
@@ -86,11 +88,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.PosterViewHo
         @Override
         public void onClick(View v) {
             int clickedPosition = getAdapterPosition();
-            mOnClickListener.onListItemClick(clickedPosition); //TODO: Fix Nullpointer mOnclickListener seems to be null
+            mOnClickListener.onListItemClick(clickedPosition);
         }
-    }
-
-    public List<Movie> getMovies() {
-        return mMovies;
     }
 }
