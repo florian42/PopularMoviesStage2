@@ -86,7 +86,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.PosterViewHo
         @Override
         public void onClick(View v) {
             int clickedPosition = getAdapterPosition();
-            mOnClickListener.onListItemClick(clickedPosition);
+            mOnClickListener.onListItemClick(clickedPosition); //TODO: Fix Nullpointer mOnclickListener seems to be null
         }
     }
 

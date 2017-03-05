@@ -6,9 +6,11 @@ import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -38,7 +40,6 @@ public class MovieActivity extends AppCompatActivity {
     private Activity mActivity;
     private CoordinatorLayout mCLayout;
 
-    private Toolbar mToolbar;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
 
     private ImageView mMovieBackdrop;
@@ -84,17 +85,17 @@ public class MovieActivity extends AppCompatActivity {
 
     private void setupActionBar() {
         // Set the support action bar
-        setSupportActionBar(mToolbar);
-        ActionBar actionBar = this.getSupportActionBar();
-        if (null == actionBar) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar_movie_detail);
+        setSupportActionBar(myToolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (null != actionBar) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
 
     private void getXMLReferences() {
         // Get the widget reference from XML layout
         mCLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(
                 R.id.collapsing_toolbar_layout_movie_details);
         mMovieBackdrop = (ImageView) findViewById(R.id.iv_movie_poster);
@@ -102,6 +103,16 @@ public class MovieActivity extends AppCompatActivity {
         mPlot = (TextView) findViewById(R.id.tv_plot);
         mReleaseDate = (TextView) findViewById(R.id.tv_release_date);
         mRating = (TextView) findViewById(R.id.tv_rating);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        // When the home button is pressed, take the user back to the VisualizerActivity
+        if (id == android.R.id.home) {
+            NavUtils.navigateUpFromSameTask(this);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

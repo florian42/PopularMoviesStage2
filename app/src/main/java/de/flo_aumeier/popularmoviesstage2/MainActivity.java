@@ -46,7 +46,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.List
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(myToolbar);;
+        setSupportActionBar(myToolbar);
+        mActivity = this;
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_movies);
         int spanCount = 2;
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this,
