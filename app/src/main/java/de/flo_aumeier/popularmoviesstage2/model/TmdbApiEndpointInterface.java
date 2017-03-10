@@ -2,6 +2,7 @@ package de.flo_aumeier.popularmoviesstage2.model;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 /**
  * Created by Flo on 27.02.2017.
@@ -15,5 +16,9 @@ public interface TmdbApiEndpointInterface {
 
     @GET("top_rated?api_key=66c86590f283f43a95c4fff54da023dc&language=en-US&page=1")
     Call<Page> getBestRatedMoviesPage1();
+
+    @GET("movie/{movieId}/videos?api_key=66c86590f283f43a95c4fff54da023dc&language=en-US")
+    Call<ResultsTrailer> getTrailersForMovie(@Path("movieId") String movieId);
+
 }
 
