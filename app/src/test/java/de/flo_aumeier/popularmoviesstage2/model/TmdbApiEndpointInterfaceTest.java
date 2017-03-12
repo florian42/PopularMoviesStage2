@@ -24,20 +24,19 @@ public class TmdbApiEndpointInterfaceTest {
 
     private static final String MESSAGE_RESPONSE_NOT_SUCCESSFULL = "Request was not successfull";
     private static final String MESSAGE_RESPONSE_IS_NULL = "Response is null";
-    MockWebServer mockWebServer;
-    Retrofit mRetrofit;
-    TmdbApiEndpointInterface mTmdbApiEndpointInterface;
+    private MockWebServer mockWebServer;
+    private TmdbApiEndpointInterface mTmdbApiEndpointInterface;
 
     @Before
     public void setUp() throws Exception {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
         Gson gson = new GsonBuilder().setLenient().create();
-        mRetrofit = new Retrofit.Builder().baseUrl(mockWebServer.url("").toString())
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(mockWebServer.url("").toString())
                 .addConverterFactory
                         (GsonConverterFactory.create(gson))
                 .build();
-        mTmdbApiEndpointInterface = mRetrofit.create(TmdbApiEndpointInterface.class);
+        mTmdbApiEndpointInterface = retrofit.create(TmdbApiEndpointInterface.class);
     }
 
     @Test
