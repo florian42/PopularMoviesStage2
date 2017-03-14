@@ -1,6 +1,8 @@
 package de.flo_aumeier.popularmoviesstage2;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -171,6 +173,11 @@ public class MovieActivity extends AppCompatActivity implements AppBarLayout.OnO
     @Override
     public void onListItemClick(int clickedItemIndex) {
         Toast.makeText(this, "Clicked: #" + clickedItemIndex, Toast.LENGTH_SHORT).show();
+        final String baseUrl = "https://www.youtube.com/watch?v=";
+        final String completeUrl = baseUrl + mTrailerUrls.get(clickedItemIndex);
+        Intent playTrailerIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(completeUrl));
+        startActivity(playTrailerIntent);
+
     }
 
     private void fetchTrailerThumbnailURLs() {
