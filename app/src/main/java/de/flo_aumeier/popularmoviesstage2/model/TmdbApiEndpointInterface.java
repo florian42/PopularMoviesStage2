@@ -17,7 +17,7 @@ public interface TmdbApiEndpointInterface {
     @GET("top_rated?api_key=66c86590f283f43a95c4fff54da023dc&language=en-US&page=1")
     Call<Page> getBestRatedMoviesPage1();
 
-    @GET("movie/{movieId}/videos?api_key=66c86590f283f43a95c4fff54da023dc&language=en-US")
+    @GET("{movieId}/videos?api_key=66c86590f283f43a95c4fff54da023dc&language=en-US")
     Call<ResultsTrailer> getTrailersForMovie(@Path("movieId") String movieId);
 
 }
