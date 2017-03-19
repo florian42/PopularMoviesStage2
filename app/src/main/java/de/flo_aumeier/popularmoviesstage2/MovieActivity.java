@@ -50,7 +50,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 // in a background thread and displays those details when the user selects a movie.
 //TODO (3): App requests for user reviews for a selected movie via the /movie/{id}/reviews endpoint
 // in a background thread and displays those details when the user selects a movie.
-public class MovieActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener, TrailerAdapter.ListItemClickListener {
+public class MovieActivity extends AppCompatActivity implements TrailerAdapter.ListItemClickListener {
     private static final String TAG = MovieActivity.class.getSimpleName();
     //https://img.youtube.com/vi/<insert-youtube-video-id-here>/default.jpg
 
@@ -88,7 +88,6 @@ public class MovieActivity extends AppCompatActivity implements AppBarLayout.OnO
         mContext = getApplicationContext();
         mActivity = this;
         mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
-        mAppBarLayout.addOnOffsetChangedListener(this);
         mMovie = getIntent().getParcelableExtra(MainActivity.INTENT_EXTRA_MOVIE);
         if (null == mMovie) {
             throw new NullPointerException("ParcelableExtra is null");
@@ -98,9 +97,7 @@ public class MovieActivity extends AppCompatActivity implements AppBarLayout.OnO
         setupActionBar();
         final String baseURL = "https://image.tmdb.org/t/p/w185/";
         final String completeURLtoBackdrop = baseURL + mMovie.getBackdropPath();
-//        Picasso.with(mContext)
-//                .load(completeURLtoBackdrop)
-//                .into(mMovieBackdrop);
+
         mPlot.setText(mMovie.getOverview());
         mReleaseDate.setText(mMovie.getReleaseDate());
         mRating.setText(String.valueOf(mMovie.getVoteAverage()));
@@ -147,27 +144,6 @@ public class MovieActivity extends AppCompatActivity implements AppBarLayout.OnO
             NavUtils.navigateUpFromSameTask(this);
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-        //int maxScroll = appBarLayout.getTotalScrollRange();
-        //float progressPercentage = (float) (Math.abs(offset)/maxScroll);
-
-        if (verticalOffset == 0) {
-            //start an alpha animation on your ImageView here (i.e. fade out)
-            mMoviePoster.animate().alpha(1f).setDuration(200l).setListener(null);
-        } else {
-            mMoviePoster.animate().alpha(0f).setDuration(200l).setListener(null);
-            //Add an opposite animation here (i.e. it fades back in again)
-        }
-/*        if (verticalOffset == 0) {
-            //mMoviePoster.setVisibility(View.VISIBLE);
-        } else {
-            //mMoviePoster.setAnimation(fadeOut);
-            //
-            //mMoviePoster.setVisibility(View.INVISIBLE);
-        }*/
     }
 
     @Override
