@@ -14,4 +14,5 @@
     <!-- Preferences -->
 
     <string name="pref_short_sort_order" translatable="false">sort_order</string>
+    <string name="review">Reviews</string>
 </resources>

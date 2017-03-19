@@ -29,6 +29,8 @@ import java.util.List;
 
 import de.flo_aumeier.popularmoviesstage2.model.Movie;
 import de.flo_aumeier.popularmoviesstage2.model.ResultsTrailer;
+import de.flo_aumeier.popularmoviesstage2.model.Review;
+import de.flo_aumeier.popularmoviesstage2.model.ReviewResults;
 import de.flo_aumeier.popularmoviesstage2.model.TmdbApiEndpointInterface;
 import de.flo_aumeier.popularmoviesstage2.model.Trailer;
 import retrofit2.Call;
@@ -50,13 +52,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 // in a background thread and displays those details when the user selects a movie.
 //TODO (3): App requests for user reviews for a selected movie via the /movie/{id}/reviews endpoint
 // in a background thread and displays those details when the user selects a movie.
-public class MovieActivity extends AppCompatActivity implements TrailerAdapter.ListItemClickListener {
+public class MovieActivity extends AppCompatActivity implements TrailerAdapter.ListItemClickListener, ReviewAdapter.ListItemClickListener {
     private static final String TAG = MovieActivity.class.getSimpleName();
     //https://img.youtube.com/vi/<insert-youtube-video-id-here>/default.jpg
 
     private static final float THRESHOLD_PERCENTAGE = 0.2F;
 
-    private RecyclerView mRecyclerView;
+    private RecyclerView mRecyclerViewReviews;
+    private List<Review> mReviews;
+    private RecyclerView mRecyclerViewTrailer;
     private List<Trailer> mTrailers;
     private List<String> mTrailerUrls;
     private Movie mMovie;
@@ -90,7 +94,7 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
         mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
         mMovie = getIntent().getParcelableExtra(MainActivity.INTENT_EXTRA_MOVIE);
         if (null == mMovie) {
-            throw new NullPointerException("ParcelableExtra is null");
+            throw new NullPointerException("Parcelable Extra is null");
         }
 
         getXMLReferences();
@@ -105,12 +109,45 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
         Picasso.with(mContext)
                 .load(completeURLToPoster)
                 .into(mMoviePoster);
-
-        mRecyclerView = (RecyclerView) findViewById(R.id.rv_toolbar_movie_thumbnails);
+        mRecyclerViewReviews = (RecyclerView) findViewById(R.id.rv_reviews);
+        LinearLayoutManager verticalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mRecyclerViewReviews.setHasFixedSize(true);
+        mRecyclerViewReviews.setLayoutManager(verticalLayoutManager);
+        fetchReviews();
+        mRecyclerViewTrailer = (RecyclerView) findViewById(R.id.rv_toolbar_movie_thumbnails);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setHasFixedSize(true);
+        mRecyclerViewTrailer.setLayoutManager(layoutManager);
+        mRecyclerViewTrailer.setHasFixedSize(true);
         fetchTrailerThumbnailURLs();
+    }
+
+    private void fetchReviews() {
+        Log.d(TAG, "Fetching reviews");
+        Gson gson = new GsonBuilder().setLenient().create();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(TmdbApiEndpointInterface.BASE_URL)
+                .addConverterFactory
+                        (GsonConverterFactory.create(gson))
+                .build();
+        TmdbApiEndpointInterface endpointInterface = retrofit.create(TmdbApiEndpointInterface.class);
+        Call<ReviewResults> call = endpointInterface.getReviewsForMovie(String.valueOf(mMovie.getId()));
+        call.enqueue(new Callback<ReviewResults>() {
+            @Override
+            public void onResponse(Call<ReviewResults> call, Response<ReviewResults> response) {
+                if (response.isSuccessful()) {
+                    ReviewResults reviewResults = response.body();
+                    mReviews = reviewResults.getResults();
+                    ReviewAdapter reviewAdapter = new ReviewAdapter(mActivity, mReviews);
+                    mRecyclerViewReviews.setAdapter(reviewAdapter);
+                } else {
+                    Log.d(TAG, "Response was not Successfull :(, CODE: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ReviewResults> call, Throwable t) {
+                Log.e(TAG, t.getMessage());
+            }
+        });
     }
 
     private void setupActionBar() {
@@ -173,7 +210,7 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
                     mTrailers = resultsTrailer.getResults();
                     mTrailerUrls = getUrlsOfTrailers();
                     TrailerAdapter adapter = new TrailerAdapter(mTrailerUrls, mActivity);
-                    mRecyclerView.setAdapter(adapter);
+                    mRecyclerViewTrailer.setAdapter(adapter);
                 } else {
                     Log.d(TAG, "Response was not Successfull :(, CODE: " + response.code());
                 }
@@ -192,5 +229,10 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
             listOfTrailersUrls.add(trailer.getKey());
         }
         return listOfTrailersUrls;
+    }
+
+    @Override
+    public void onReviewAdapterListItemClick(int clickedItemIndex) {
+        Toast.makeText(this, "Clicked: #" + clickedItemIndex, Toast.LENGTH_SHORT).show();
     }
 }

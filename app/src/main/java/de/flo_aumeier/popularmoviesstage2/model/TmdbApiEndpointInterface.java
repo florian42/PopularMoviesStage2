@@ -20,7 +20,7 @@ public interface TmdbApiEndpointInterface {
     @GET("{movieId}/videos?api_key=66c86590f283f43a95c4fff54da023dc&language=en-US")
     Call<ResultsTrailer> getTrailersForMovie(@Path("movieId") String movieId);
 
-    @GET("movie/{movieId}/reviews?api_key=66c86590f283f43a95c4fff54da023dc")
+    @GET("{movieId}/reviews?api_key=66c86590f283f43a95c4fff54da023dc")
     Call<ReviewResults> getReviewsForMovie(@Path("movieId") String movieId);
 
 }
