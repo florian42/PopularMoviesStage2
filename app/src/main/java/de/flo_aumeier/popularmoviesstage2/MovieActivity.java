@@ -46,12 +46,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 /*
 * Displays detailed information for a specific movie.
 */
-//TODO: When a trailer is selected, app uses an Intent to launch the trailer.
 //TODO: In the movies detail screen, a user can tap a button(for example, a star) to mark it as a Favorite.
-//TODO (2): App requests for related videos for a selected movie via the /movie/{id}/videos endpoint
-// in a background thread and displays those details when the user selects a movie.
-//TODO (3): App requests for user reviews for a selected movie via the /movie/{id}/reviews endpoint
-// in a background thread and displays those details when the user selects a movie.
 public class MovieActivity extends AppCompatActivity implements TrailerAdapter.ListItemClickListener, ReviewAdapter.ListItemClickListener {
     private static final String TAG = MovieActivity.class.getSimpleName();
     //https://img.youtube.com/vi/<insert-youtube-video-id-here>/default.jpg
