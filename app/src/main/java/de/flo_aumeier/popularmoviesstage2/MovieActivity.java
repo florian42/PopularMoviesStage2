@@ -1,14 +1,19 @@
 package de.flo_aumeier.popularmoviesstage2;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +21,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +39,8 @@ import de.flo_aumeier.popularmoviesstage2.model.Review;
 import de.flo_aumeier.popularmoviesstage2.model.ReviewResults;
 import de.flo_aumeier.popularmoviesstage2.model.TmdbApiEndpointInterface;
 import de.flo_aumeier.popularmoviesstage2.model.Trailer;
+import de.flo_aumeier.popularmoviesstage2.model.db.FavouriteMovieContract;
+import de.flo_aumeier.popularmoviesstage2.model.db.FavouriteMovieDbHelper;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -53,6 +61,8 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
 
     private static final float THRESHOLD_PERCENTAGE = 0.2F;
 
+    private SQLiteDatabase mDb;
+
     private RecyclerView mRecyclerViewReviews;
     private List<Review> mReviews;
     private RecyclerView mRecyclerViewTrailer;
@@ -63,6 +73,7 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
     private Context mContext;
     private MovieActivity mActivity;
     private CoordinatorLayout mCLayout;
+    private FloatingActionButton mFavouriteButton;
 
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
 
@@ -114,6 +125,74 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
         mRecyclerViewTrailer.setLayoutManager(layoutManager);
         mRecyclerViewTrailer.setHasFixedSize(true);
         fetchTrailerThumbnailURLs();
+
+        //db
+        FavouriteMovieDbHelper dbHelper = new FavouriteMovieDbHelper(this);
+        mDb = dbHelper.getWritableDatabase();
+        setFavouriteButtonBackground();
+    }
+
+    private void setFavouriteButtonBackground() {
+        if (isFavouriteMovie()) {
+            mFavouriteButton.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_favorite_white_24dp, null));
+        } else {
+            mFavouriteButton.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_favorite_border_white_24dp, null));
+        }
+    }
+
+    public boolean isFavouriteMovie() {
+        final String[] columns = {FavouriteMovieContract.FavouriteMovieEntry.COLUMN_IS_FAVOURITE};
+        final String where = FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_ID + " = ?";
+        final String movieid = String.valueOf(mMovie.getId());
+        final String[] whereArgs = {movieid};
+        final Cursor cursor = mDb.query(FavouriteMovieContract.FavouriteMovieEntry.TABLE_NAME,
+                null, //an array of the columns iam interested in
+                null,
+                null,
+                null,
+                null,
+                null);
+        int isFavouriteMovie = 0;
+        try {
+            while (cursor.moveToNext()) {
+                int movieIdColumnIndex = cursor.getColumnIndex(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_ID);
+                int movieId = cursor.getInt(movieIdColumnIndex);
+                if (movieId == mMovie.getId()) {
+                    int isFavouriteMovieColumnIndex = cursor.getColumnIndex(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_IS_FAVOURITE);
+                    isFavouriteMovie = cursor.getInt(isFavouriteMovieColumnIndex);
+                }
+            }
+
+        } finally {
+            cursor.close();
+        }
+        boolean isFavourite = false;
+        if (isFavouriteMovie == 1) {
+            isFavourite = true;
+        }
+        return isFavourite;
+    }
+
+    public void addToFavouriteMovies(View view) {
+        if (isFavouriteMovie()) {
+            removeFromFavouriteMovies();
+        } else {
+            addNewFavouriteMovie(mMovie.getTitle(), mMovie.getId());
+        }
+        setFavouriteButtonBackground();
+    }
+
+    private void removeFromFavouriteMovies() {
+        mDb.delete(FavouriteMovieContract.FavouriteMovieEntry.TABLE_NAME, FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_ID + "=" + mMovie.getId(), null);
+    }
+
+    private long addNewFavouriteMovie(String title, int movieId) {
+
+        ContentValues cv = new ContentValues();
+        cv.put(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_ID, movieId);
+        cv.put(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_TITLE, title);
+        cv.put(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_IS_FAVOURITE, true);
+        return mDb.insert(FavouriteMovieContract.FavouriteMovieEntry.TABLE_NAME, null, cv);
     }
 
     private void fetchReviews() {
@@ -166,6 +245,7 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
         mPlot = (TextView) findViewById(R.id.tv_plot);
         mReleaseDate = (TextView) findViewById(R.id.tv_release_date);
         mRating = (TextView) findViewById(R.id.tv_rating);
+        mFavouriteButton = (FloatingActionButton) findViewById(R.id.fav);
     }
 
     @Override
