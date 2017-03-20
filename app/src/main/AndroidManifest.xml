@@ -10,6 +10,10 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <provider
+            android:name="de.flo_aumeier.popularmoviesstage2.controller.FavouriteMoviesContentProvider"
+            android:authorities="de.flo_aumeier.popularmoviesstage2"
+            android:exported="false" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
