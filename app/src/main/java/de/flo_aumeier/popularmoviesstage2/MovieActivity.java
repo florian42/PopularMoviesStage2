@@ -236,6 +236,8 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
     }
 
     private void getXMLReferences() {
+        TextView voteCount = (TextView) findViewById(R.id.tv_vote_count);
+        voteCount.setText(String.valueOf(mMovie.getVoteCount()));
         // Get the widget reference from XML layout
         mCLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
         mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(
