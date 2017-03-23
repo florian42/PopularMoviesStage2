@@ -56,9 +56,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 //TODO: In the movies detail screen, a user can tap a button(for example, a star) to mark it as a Favorite.
 public class MovieActivity extends AppCompatActivity implements TrailerAdapter.ListItemClickListener, ReviewAdapter.ListItemClickListener {
     private static final String TAG = MovieActivity.class.getSimpleName();
-    //https://img.youtube.com/vi/<insert-youtube-video-id-here>/default.jpg
-
-    private static final float THRESHOLD_PERCENTAGE = 0.2F;
 
     private ContentResolver mMoviesContentProvider;
 
@@ -173,8 +170,8 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
 
     private void removeFromFavouriteMovies() {
         // mDb.delete(FavouriteMovieContract.FavouriteMovieEntry.TABLE_NAME, FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_ID + "=" + mMovie.getId(), null);
-        final String selection = FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_ID + "=?";
-        mMoviesContentProvider.delete(FavouriteMovieContract.FavouriteMovieEntry.CONTENT_URI, selection, null);
+        final Uri uri = FavouriteMovieContract.FavouriteMovieEntry.CONTENT_URI.buildUpon().appendPath(mMovie.getId().toString()).build();
+        mMoviesContentProvider.delete(uri, null, null);
     }
 
     private void addNewFavouriteMovie(String title, int movieId) {
