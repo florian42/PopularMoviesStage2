@@ -67,14 +67,29 @@ public class FavouriteMoviesContentProvider extends ContentProvider {
                 }
                 break;
             default:
-                throw new UnsupportedOperationException("Unknow uri: " + uri);
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
+        getContext().getContentResolver().notifyChange(uri, null);
         return returnUri;
     }
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+        final SQLiteDatabase db = mFavouriteDbHelper.getWritableDatabase();
+        int match = sUriMatcher.match(uri);
+        int deletedMovieEntrys = 0;
+        switch (match) {
+            case MOVIES_WITH_ID:
+                String id = uri.getPathSegments().get(1);
+                deletedMovieEntrys = db.delete(FavouriteMovieContract.FavouriteMovieEntry.TABLE_NAME, "_id=?", new String[]{id});
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown URI: " + uri);
+        }
+        if (deletedMovieEntrys != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return deletedMovieEntrys;
     }
 
     @Override
