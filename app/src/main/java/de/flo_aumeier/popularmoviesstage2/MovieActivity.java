@@ -1,10 +1,10 @@
 package de.flo_aumeier.popularmoviesstage2;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -40,7 +40,6 @@ import de.flo_aumeier.popularmoviesstage2.model.ReviewResults;
 import de.flo_aumeier.popularmoviesstage2.model.TmdbApiEndpointInterface;
 import de.flo_aumeier.popularmoviesstage2.model.Trailer;
 import de.flo_aumeier.popularmoviesstage2.model.db.FavouriteMovieContract;
-import de.flo_aumeier.popularmoviesstage2.model.db.FavouriteMovieDbHelper;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -61,7 +60,7 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
 
     private static final float THRESHOLD_PERCENTAGE = 0.2F;
 
-    private SQLiteDatabase mDb;
+    private ContentResolver mMoviesContentProvider;
 
     private RecyclerView mRecyclerViewReviews;
     private List<Review> mReviews;
@@ -97,6 +96,7 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
         // Get the application context
         mContext = getApplicationContext();
         mActivity = this;
+        mMoviesContentProvider = getContentResolver();
         mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
         mMovie = getIntent().getParcelableExtra(MainActivity.INTENT_EXTRA_MOVIE);
         if (null == mMovie) {
@@ -127,8 +127,6 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
         fetchTrailerThumbnailURLs();
 
         //db
-        FavouriteMovieDbHelper dbHelper = new FavouriteMovieDbHelper(this);
-        mDb = dbHelper.getWritableDatabase();
         setFavouriteButtonBackground();
     }
 
@@ -141,17 +139,8 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
     }
 
     public boolean isFavouriteMovie() {
-        final String[] columns = {FavouriteMovieContract.FavouriteMovieEntry.COLUMN_IS_FAVOURITE};
-        final String where = FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_ID + " = ?";
-        final String movieid = String.valueOf(mMovie.getId());
-        final String[] whereArgs = {movieid};
-        final Cursor cursor = mDb.query(FavouriteMovieContract.FavouriteMovieEntry.TABLE_NAME,
-                null, //an array of the columns iam interested in
-                null,
-                null,
-                null,
-                null,
-                null);
+
+        final Cursor cursor = mMoviesContentProvider.query(FavouriteMovieContract.FavouriteMovieEntry.CONTENT_URI, null, null, null, null);
         int isFavouriteMovie = 0;
         try {
             while (cursor.moveToNext()) {
@@ -183,16 +172,18 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
     }
 
     private void removeFromFavouriteMovies() {
-        mDb.delete(FavouriteMovieContract.FavouriteMovieEntry.TABLE_NAME, FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_ID + "=" + mMovie.getId(), null);
+        // mDb.delete(FavouriteMovieContract.FavouriteMovieEntry.TABLE_NAME, FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_ID + "=" + mMovie.getId(), null);
+        final String selection = FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_ID + "=?";
+        mMoviesContentProvider.delete(FavouriteMovieContract.FavouriteMovieEntry.CONTENT_URI, selection, null);
     }
 
-    private long addNewFavouriteMovie(String title, int movieId) {
+    private void addNewFavouriteMovie(String title, int movieId) {
 
         ContentValues cv = new ContentValues();
         cv.put(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_ID, movieId);
         cv.put(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_TITLE, title);
         cv.put(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_IS_FAVOURITE, true);
-        return mDb.insert(FavouriteMovieContract.FavouriteMovieEntry.TABLE_NAME, null, cv);
+        mMoviesContentProvider.insert(FavouriteMovieContract.FavouriteMovieEntry.CONTENT_URI, cv);
     }
 
     private void fetchReviews() {
