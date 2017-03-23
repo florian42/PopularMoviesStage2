@@ -3,6 +3,7 @@ package de.flo_aumeier.popularmoviesstage2;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.GridLayoutManager;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -23,6 +25,8 @@ import java.util.List;
 import de.flo_aumeier.popularmoviesstage2.model.Movie;
 import de.flo_aumeier.popularmoviesstage2.model.Page;
 import de.flo_aumeier.popularmoviesstage2.model.TmdbApiEndpointInterface;
+import de.flo_aumeier.popularmoviesstage2.model.error.ErrorMessages;
+import de.flo_aumeier.popularmoviesstage2.utils.NetworkUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -34,13 +38,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
 
     public static final String TAG = MainActivity.class.getSimpleName();
     public static final String INTENT_EXTRA_MOVIE = "EXTRA_MOVIE";
-
+    SharedPreferences mSharedPreferences;
     private MovieAdapter mPopularMoviesAdapter;
     private MovieAdapter mBestRatedMoviesAdapter;
     private List<Movie> mMovies;
     private MainActivity mActivity;
-
+    private View mCoordinatorLayout;
     private RecyclerView mRecyclerView;
+    /**
+     * Displays an error if one is encountered
+     */
+    private Snackbar mErrorSnackBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,11 +63,16 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
                 spanCount);
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setHasFixedSize(true);
-        //fetchPopularMovies(); Überflüssig passiert durch die Settings
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        setSortOrder(sharedPreferences.getBoolean(getString(R.string.pref_short_sort_order),
-                getResources().getBoolean(R.bool.pref_sort_order_default)));
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+        mCoordinatorLayout = findViewById(R.id.activity_main);
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
+        if (NetworkUtils.isOnline(this)) {
+            setSortOrder(mSharedPreferences.getBoolean(getString(R.string.pref_short_sort_order),
+                    getResources().getBoolean(R.bool.pref_sort_order_default)));
+        } else {
+            showNetworkError();
+        }
+
     }
 
     @Override
@@ -152,12 +165,30 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
      * @param sortOrderBestRated
      */
     private void setSortOrder(Boolean sortOrderBestRated) {
-        Log.d(TAG, "Sorting Best Rated Movies: " + sortOrderBestRated);
-        if (sortOrderBestRated) {
-            fetchBestRatedMovies();
+
+        if (NetworkUtils.isOnline(this)) {
+            Log.d(TAG, "Sorting Best Rated Movies: " + sortOrderBestRated);
+            if (sortOrderBestRated) {
+                fetchBestRatedMovies();
+            } else {
+                fetchPopularMovies();
+            }
         } else {
-            fetchPopularMovies();
+            showNetworkError();
         }
+    }
+
+    private void showNetworkError() {
+        mErrorSnackBar = Snackbar
+                .make(mCoordinatorLayout, ErrorMessages.NO_NETWORK_CONNECTION.getMessage(), Snackbar.LENGTH_LONG)
+                .setAction("RETRY", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        setSortOrder(mSharedPreferences.getBoolean(getString(R.string.pref_short_sort_order),
+                                getResources().getBoolean(R.bool.pref_sort_order_default)));
+                    }
+                });
+        mErrorSnackBar.show();
     }
 
     private void fetchBestRatedMovies() {

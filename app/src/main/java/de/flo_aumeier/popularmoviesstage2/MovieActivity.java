@@ -40,6 +40,8 @@ import de.flo_aumeier.popularmoviesstage2.model.ReviewResults;
 import de.flo_aumeier.popularmoviesstage2.model.TmdbApiEndpointInterface;
 import de.flo_aumeier.popularmoviesstage2.model.Trailer;
 import de.flo_aumeier.popularmoviesstage2.model.db.FavouriteMovieContract;
+import de.flo_aumeier.popularmoviesstage2.model.error.ErrorMessages;
+import de.flo_aumeier.popularmoviesstage2.utils.NetworkUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -53,12 +55,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 /*
 * Displays detailed information for a specific movie.
 */
-//TODO: In the movies detail screen, a user can tap a button(for example, a star) to mark it as a Favorite.
 public class MovieActivity extends AppCompatActivity implements TrailerAdapter.ListItemClickListener, ReviewAdapter.ListItemClickListener {
     private static final String TAG = MovieActivity.class.getSimpleName();
 
     private ContentResolver mMoviesContentProvider;
-
+    private CoordinatorLayout mCoordinatorLayout;
     private RecyclerView mRecyclerViewReviews;
     private List<Review> mReviews;
     private RecyclerView mRecyclerViewTrailer;
@@ -93,6 +94,7 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
         // Get the application context
         mContext = getApplicationContext();
         mActivity = this;
+        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
         mMoviesContentProvider = getContentResolver();
         mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
         mMovie = getIntent().getParcelableExtra(MainActivity.INTENT_EXTRA_MOVIE);
@@ -116,12 +118,16 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
         LinearLayoutManager verticalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRecyclerViewReviews.setHasFixedSize(true);
         mRecyclerViewReviews.setLayoutManager(verticalLayoutManager);
-        fetchReviews();
         mRecyclerViewTrailer = (RecyclerView) findViewById(R.id.rv_toolbar_movie_thumbnails);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mRecyclerViewTrailer.setLayoutManager(layoutManager);
         mRecyclerViewTrailer.setHasFixedSize(true);
-        fetchTrailerThumbnailURLs();
+        if (NetworkUtils.isOnline(this)) {
+            fetchReviews();
+            fetchTrailerThumbnailURLs();
+        } else {
+            showNetworkError();
+        }
 
         //db
         setFavouriteButtonBackground();
@@ -299,5 +305,18 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
     @Override
     public void onReviewAdapterListItemClick(int clickedItemIndex) {
         Toast.makeText(this, "Clicked: #" + clickedItemIndex, Toast.LENGTH_SHORT).show();
+    }
+
+    private void showNetworkError() {
+        mErrorSnackBar = Snackbar
+                .make(mCoordinatorLayout, ErrorMessages.NO_NETWORK_CONNECTION.getMessage(), Snackbar.LENGTH_LONG)
+                .setAction("RETRY", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        fetchReviews();
+                        fetchTrailerThumbnailURLs();
+                    }
+                });
+        mErrorSnackBar.show();
     }
 }
