@@ -42,7 +42,19 @@ public class FavouriteMoviesContentProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        return null;
+        final SQLiteDatabase db = mFavouriteDbHelper.getReadableDatabase();
+        int match = sUriMatcher.match(uri);
+        Cursor retCursor;
+        switch (match) {
+            case MOVIES:
+                retCursor = db.query(FavouriteMovieContract.FavouriteMovieEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown Uri: " + uri);
+        }
+        retCursor.setNotificationUri(getContext().getContentResolver(), uri);
+
+        return retCursor;
     }
 
     @Nullable
@@ -94,6 +106,20 @@ public class FavouriteMoviesContentProvider extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+        int moviesUpdated;
+
+        int match = sUriMatcher.match(uri);
+        switch (match) {
+            case MOVIES_WITH_ID:
+                String id = uri.getPathSegments().get(1);
+                moviesUpdated = mFavouriteDbHelper.getWritableDatabase().update(FavouriteMovieContract.FavouriteMovieEntry.TABLE_NAME, values, "_id=?", new String[]{id});
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        if (moviesUpdated != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return moviesUpdated;
     }
 }
