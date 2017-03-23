@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
@@ -33,6 +34,33 @@ public class FavouriteMoviesContentProviderTest {
         FavouriteMovieDbHelper dbHelper = new FavouriteMovieDbHelper(mContext);
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         database.delete(FavouriteMovieContract.FavouriteMovieEntry.TABLE_NAME, null, null);
+        database.close();
+    }
+
+    /**
+     * Inserts data, then tests if a query for the tasks directory returns that data as a Cursor
+     */
+    @Test
+    public void testQuery() {
+        FavouriteMovieDbHelper dbHelper = new FavouriteMovieDbHelper(mContext);
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        ContentValues testMovieValues = new ContentValues();
+        testMovieValues.put(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_TITLE, "Test Movie");
+        testMovieValues.put(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_IS_FAVOURITE, true);
+        testMovieValues.put(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_ID, 23455);
+
+        long movieRowId = database.insert(FavouriteMovieContract.FavouriteMovieEntry.TABLE_NAME, null, testMovieValues);
+        String insertFailed = "Unable to insert directly into the database";
+        assertTrue(insertFailed, movieRowId != -1);
+        database.close();
+
+        Cursor movieCursor = mContext.getContentResolver().query(FavouriteMovieContract.FavouriteMovieEntry.CONTENT_URI, null, null, null, null);
+        String queryFailed = "Query failed to return a valid Cursor";
+        assertTrue(queryFailed, movieCursor != null);
+
+        /* We are done with the cursor, close it now. */
+        movieCursor.close();
+
     }
 
     @Test
@@ -56,7 +84,6 @@ public class FavouriteMoviesContentProviderTest {
     public void testDelete() throws Exception {
         FavouriteMovieDbHelper dbHelper = new FavouriteMovieDbHelper(InstrumentationRegistry.getTargetContext());
         SQLiteDatabase database = dbHelper.getWritableDatabase();
-
         ContentValues testMovieValues = new ContentValues();
         testMovieValues.put(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_TITLE, "Test Movie");
         testMovieValues.put(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_IS_FAVOURITE, true);
@@ -68,7 +95,7 @@ public class FavouriteMoviesContentProviderTest {
         String insertFailed = "Unable to insert into the database";
         assertTrue(insertFailed, movieRowId != -1);
 
-        Uri uriToDelete = FavouriteMovieContract.FavouriteMovieEntry.CONTENT_URI.buildUpon().appendPath("1").build();
+        Uri uriToDelete = FavouriteMovieContract.FavouriteMovieEntry.CONTENT_URI.buildUpon().appendPath("2").build();
         ContentResolver contentResolver = mContext.getContentResolver();
         int moviesDeleted = contentResolver.delete(uriToDelete, null, null);
 
