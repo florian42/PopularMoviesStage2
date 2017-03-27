@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.ms.square.android.expandabletextview.ExpandableTextView;
+
 import java.util.List;
 
 import de.flo_aumeier.popularmoviesstage2.model.Review;
@@ -54,12 +56,12 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     class ReviewViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView author;
-        private TextView review;
+        private ExpandableTextView review;
 
         public ReviewViewHolder(View itemView) {
             super(itemView);
             author = (TextView) itemView.findViewById(R.id.tv_review_author);
-            review = (TextView) itemView.findViewById(R.id.tv_review_content);
+            review = (ExpandableTextView) itemView.findViewById(R.id.expand_text_view);
             itemView.setOnClickListener(this);
         }
 

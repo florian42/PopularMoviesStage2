@@ -51,4 +51,5 @@ dependencies {
     compile 'com.android.support:design:25.3.0'
     compile 'com.android.support:preference-v7:25.3.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.ms-square:expandableTextView:0.1.4'
 }
