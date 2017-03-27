@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
         }
     }
 
-    public void fetchPopularMovies() {
+    private void fetchPopularMovies() {
         Log.d(TAG, "Fetching Popular Movies");
         showLoadingIndicator(true);
         Gson gson = new GsonBuilder().setLenient().create();

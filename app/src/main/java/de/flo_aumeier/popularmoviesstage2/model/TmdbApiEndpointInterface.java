@@ -9,7 +9,7 @@ import retrofit2.http.Path;
  */
 
 public interface TmdbApiEndpointInterface {
-    public static final String BASE_URL = "https://api.themoviedb.org/3/movie/";
+    String BASE_URL = "https://api.themoviedb.org/3/movie/";
 
     @GET("popular?api_key=66c86590f283f43a95c4fff54da023dc&language=en-US&page=1")
     Call<Page> getPopularMoviesPage1();

@@ -16,4 +16,7 @@
     <string name="pref_short_sort_order" translatable="false">sort_order</string>
     <string name="review">Reviews</string>
     <string name="vote_count">Votes</string>
+    <string name="view_of_the_trailers">View of the trailers</string>
+    <string name="expand_collapse_button_for_reviews">Expand/Collapse button for Reviews</string>
+    <string name="settings">Settings</string>
 </resources>

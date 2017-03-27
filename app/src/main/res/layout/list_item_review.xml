@@ -33,6 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right|bottom"
             android:background="@android:color/transparent"
+            android:contentDescription="@string/expand_collapse_button_for_reviews"
             android:padding="16dp"/>
     </com.ms.square.android.expandabletextview.ExpandableTextView>
 

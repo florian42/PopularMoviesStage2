@@ -7,9 +7,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context="de.flo_aumeier.popularmoviesstage2.MovieActivity">
-    <!-- TODO (2): Movie Details layout contains a section for displaying trailer videos and user
-    reviews. -->
-    <!-- https://medium.com/google-developers/why-would-i-want-to-fitssystemwindows-4e26d9ce1eec#.yty230lqz -->
+
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
@@ -74,8 +72,9 @@
                 android:layout_width="120dp"
                 android:layout_height="180dp"
                 android:adjustViewBounds="true"
+                android:contentDescription="@string/view_of_the_trailers"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"/>
 
             <TextView
                 android:id="@+id/tv_rating_headline"

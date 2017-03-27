@@ -70,9 +70,8 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
         void bind(String trailerYoutubeId) {
             //https://img.youtube.com/vi/<insert-youtube-video-id-here>/default.jpg
             final String youtubeThumbnailUrlStart = "https://img.youtube.com/vi/";
-            final String youtubeVideoId = trailerYoutubeId;
             final String youtubeThumbnailUrlEnd = "/maxresdefault.jpg";
-            final String thumbnailURL = youtubeThumbnailUrlStart + youtubeVideoId + youtubeThumbnailUrlEnd;
+            final String thumbnailURL = youtubeThumbnailUrlStart + trailerYoutubeId + youtubeThumbnailUrlEnd;
             Log.d(TAG, "Loading Thumbnail: " + thumbnailURL);
             Picasso.with(mContext)
                     .load(thumbnailURL)

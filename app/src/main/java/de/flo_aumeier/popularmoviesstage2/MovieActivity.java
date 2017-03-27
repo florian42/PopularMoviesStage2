@@ -7,9 +7,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NavUtils;
@@ -69,15 +66,10 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
     private List<Trailer> mTrailers;
     private List<String> mTrailerUrls;
     private Movie mMovie;
-    private AppBarLayout mAppBarLayout;
-    private Context mContext;
     private MovieActivity mActivity;
-    private CoordinatorLayout mCLayout;
     private FloatingActionButton mFavouriteButton;
 
-    private CollapsingToolbarLayout mCollapsingToolbarLayout;
 
-    private ImageView mMovieBackdrop;
     private ImageView mMoviePoster;
 
     private TextView mPlot;
@@ -96,11 +88,10 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
         setContentView(R.layout.activity_movie);
 
         // Get the application context
-        mContext = getApplicationContext();
+        Context context = getApplicationContext();
         mActivity = this;
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator_trailer);
         mMoviesContentProvider = getContentResolver();
-        mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
         mMovie = getIntent().getParcelableExtra(MainActivity.INTENT_EXTRA_MOVIE);
         if (null == mMovie) {
             throw new NullPointerException("Parcelable Extra is null");
@@ -115,7 +106,7 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
         mReleaseDate.setText(mMovie.getReleaseDate());
         mRating.setText(String.valueOf(mMovie.getVoteAverage()));
         final String completeURLToPoster = baseURL + mMovie.getPosterPath();
-        Picasso.with(mContext)
+        Picasso.with(context)
                 .load(completeURLToPoster)
                 .into(mMoviePoster);
         mRecyclerViewReviews = (RecyclerView) findViewById(R.id.rv_reviews);
@@ -151,11 +142,12 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
         }
     }
 
-    public boolean isFavouriteMovie() {
+    private boolean isFavouriteMovie() {
 
         final Cursor cursor = mMoviesContentProvider.query(FavouriteMovieContract.FavouriteMovieEntry.CONTENT_URI, null, null, null, null);
         int isFavouriteMovie = 0;
         try {
+            assert cursor != null;
             while (cursor.moveToNext()) {
                 int movieIdColumnIndex = cursor.getColumnIndex(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_ID);
                 int movieId = cursor.getInt(movieIdColumnIndex);
@@ -243,10 +235,7 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
         TextView voteCount = (TextView) findViewById(R.id.tv_vote_count);
         voteCount.setText(String.valueOf(mMovie.getVoteCount()));
         // Get the widget reference from XML layout
-        mCLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
-        mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(
-                R.id.collapsing_toolbar_layout_movie_details);
-        mMovieBackdrop = (ImageView) findViewById(R.id.iv_movie_poster);
+
         mMoviePoster = (ImageView) findViewById(R.id.iv_movie_poster_toolbar);
         mPlot = (TextView) findViewById(R.id.tv_plot);
         mReleaseDate = (TextView) findViewById(R.id.tv_release_date);
