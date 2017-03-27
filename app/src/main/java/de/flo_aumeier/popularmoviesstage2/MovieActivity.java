@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -82,6 +83,7 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
     private TextView mPlot;
     private TextView mReleaseDate;
     private TextView mRating;
+    private ProgressBar mLoadingIndicator;
     /**
      * Displays an error if one is encountered
      */
@@ -96,6 +98,7 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
         // Get the application context
         mContext = getApplicationContext();
         mActivity = this;
+        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator_trailer);
         mMoviesContentProvider = getContentResolver();
         mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
         mMovie = getIntent().getParcelableExtra(MainActivity.INTENT_EXTRA_MOVIE);
@@ -128,6 +131,16 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
 
         //db
         setFavouriteButtonBackground();
+    }
+
+    private void showLoadingIndicator(boolean show) {
+        if (show) {
+            mRecyclerViewTrailer.setVisibility(View.INVISIBLE);
+            mLoadingIndicator.setVisibility(View.VISIBLE);
+        } else {
+            mLoadingIndicator.setVisibility(View.GONE);
+            mRecyclerViewTrailer.setVisibility(View.VISIBLE);
+        }
     }
 
     private void setFavouriteButtonBackground() {
@@ -263,6 +276,7 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
 
     private void fetchTrailerThumbnailURLs() {
         Log.d(TAG, "Fetching Thumbnails for the trailers");
+        showLoadingIndicator(true);
         Gson gson = new GsonBuilder().setLenient().create();
         Retrofit retrofit = new Retrofit.Builder().baseUrl(TmdbApiEndpointInterface.BASE_URL)
                 .addConverterFactory
@@ -282,6 +296,7 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
                 } else {
                     Log.d(TAG, "Response was not Successfull :(, CODE: " + response.code());
                 }
+                showLoadingIndicator(false);
             }
 
             @Override

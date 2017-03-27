@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -42,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
 
     private RecyclerView mRecyclerView;
 
+    private ProgressBar mLoadingIndicator;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
         mActivity = this;
+        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_movies);
         int spanCount = 2;
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this,
@@ -110,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
 
     public void fetchPopularMovies() {
         Log.d(TAG, "Fetching Popular Movies");
+        showLoadingIndicator(true);
         Gson gson = new GsonBuilder().setLenient().create();
         Retrofit retrofit = new Retrofit.Builder().baseUrl(TmdbApiEndpointInterface.BASE_URL)
                 .addConverterFactory
@@ -134,8 +140,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
                 } else {
                     Log.d(TAG, response.errorBody().toString());
                 }
+                showLoadingIndicator(false);
 
             }
+
 
             @Override
             public void onFailure(Call<Page> call, Throwable t) {
@@ -144,6 +152,16 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
 
 
         });
+    }
+
+    private void showLoadingIndicator(boolean show) {
+        if (show) {
+            mRecyclerView.setVisibility(View.GONE);
+            mLoadingIndicator.setVisibility(View.VISIBLE);
+        } else {
+            mLoadingIndicator.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -163,6 +181,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
     private void fetchBestRatedMovies() {
         LinkedList<Movie> fetchedMovies = null;
         Log.d(TAG, "Fetching Best Rated Movies");
+        showLoadingIndicator(true);
         Gson gson = new GsonBuilder().setLenient().create();
         Retrofit retrofit = new Retrofit.Builder().baseUrl(TmdbApiEndpointInterface.BASE_URL)
                 .addConverterFactory
@@ -187,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
                 } else {
                     Log.d(TAG, response.errorBody().toString());
                 }
-
+                showLoadingIndicator(false);
             }
 
             @Override
