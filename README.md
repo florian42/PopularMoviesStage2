@@ -1,4 +1,6 @@
 # Requirements
+# API KEY
+Past your API KEY in: de.flo_aumeier.popularmoviesstage2.model.TmdbApiEndpointInterface.API_KEY
 ## User Interface - Layout
 1. UI contains an element (e.g., a spinner or settings menu) to toggle the sort order of the 
 movies by: most popular, highest rated.
