@@ -14,7 +14,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -30,6 +29,9 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+/**
+ * Displays the main view in the app.
+ */
 public class MainActivity extends AppCompatActivity implements MovieAdapter
         .ListItemClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -76,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
     @Override
     public void onListItemClick(int clickedItemIndex) {
         final Movie clickedMovie = mMovies.get(clickedItemIndex);
-        Toast.makeText(this, "Clicked: #" + clickedItemIndex, Toast.LENGTH_SHORT).show();
         Intent startMovieActivityIntent = new Intent(this, MovieActivity.class);
         startMovieActivityIntent.putExtra(INTENT_EXTRA_MOVIE, clickedMovie);
         startActivity(startMovieActivityIntent);

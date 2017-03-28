@@ -15,9 +15,8 @@ import java.util.List;
 import de.flo_aumeier.popularmoviesstage2.model.Review;
 
 /**
- * Created by Flo on 19.03.2017.
+ * Adapter holding a list of Reviews.
  */
-
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder> {
     private static final String TAG = ReviewAdapter.class.getSimpleName();
     private ListItemClickListener mOnClickListener;

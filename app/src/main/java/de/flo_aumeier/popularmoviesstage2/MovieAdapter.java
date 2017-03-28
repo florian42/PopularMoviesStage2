@@ -16,9 +16,8 @@ import java.util.List;
 import de.flo_aumeier.popularmoviesstage2.model.Movie;
 
 /**
- * Created by Society on 22.01.2017.
+ * The detailed view of a particular movie.
  */
-
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.PosterViewHolder> {
     private static final String TAG = MovieAdapter.class.getSimpleName();
 

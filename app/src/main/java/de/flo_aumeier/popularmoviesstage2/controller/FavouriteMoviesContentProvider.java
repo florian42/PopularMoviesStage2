@@ -15,7 +15,7 @@ import de.flo_aumeier.popularmoviesstage2.model.db.FavouriteMovieContract;
 import de.flo_aumeier.popularmoviesstage2.model.db.FavouriteMovieDbHelper;
 
 /**
- * Created by faumeier on 20.03.2017.
+ * Provides access to the contents of the underlying database where favourite movies are stored.
  */
 
 public class FavouriteMoviesContentProvider extends ContentProvider {
@@ -93,7 +93,7 @@ public class FavouriteMoviesContentProvider extends ContentProvider {
         switch (match) {
             case MOVIES_WITH_ID:
                 String id = uri.getPathSegments().get(1);
-                deletedMovieEntrys = db.delete(FavouriteMovieContract.FavouriteMovieEntry.TABLE_NAME, "_id=?", new String[]{id});
+                deletedMovieEntrys = db.delete(FavouriteMovieContract.FavouriteMovieEntry.TABLE_NAME, "movieId=?", new String[]{id});
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown URI: " + uri);

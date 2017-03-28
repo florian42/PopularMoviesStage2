@@ -10,8 +10,10 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Movie implements Parcelable
-{
+/**
+ * Data object holding information ab a movie.
+ */
+public class Movie implements Parcelable {
     public final static Parcelable.Creator<Movie> CREATOR = new Creator<Movie>() {
 
 
@@ -88,13 +90,11 @@ public class Movie implements Parcelable
 
     /**
      * No args constructor for use in serialization
-     *
      */
     public Movie() {
     }
 
     /**
-     *
      * @param id
      * @param genreIds
      * @param title

@@ -9,6 +9,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+/**
+ * Data object holding the information for the review query.
+ */
 public class ReviewResults implements Parcelable {
 
     public final static Creator<ReviewResults> CREATOR = new Creator<ReviewResults>() {

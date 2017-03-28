@@ -4,7 +4,7 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
- * Created by Flo on 19.03.2017.
+ * Contract holding information about the underlying db.
  */
 
 public class FavouriteMovieContract {

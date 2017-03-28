@@ -5,17 +5,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
- * Created by Flo on 19.03.2017.
+ * Helper class for access to the database.
  */
 
 public class FavouriteMovieDbHelper extends SQLiteOpenHelper {
 
-    // COMPLETED (2) Create a static final String called DATABASE_NAME and set it to "waitlist.db"
-    // The database name
+
     private static final String DATABASE_NAME = "favourite_movies.db";
 
-    // COMPLETED (3) Create a static final int called DATABASE_VERSION and set it to 1
-    // If you change the database schema, you must increment the database version
+
     private static final int DATABASE_VERSION = 1;
 
     public FavouriteMovieDbHelper(Context context) {

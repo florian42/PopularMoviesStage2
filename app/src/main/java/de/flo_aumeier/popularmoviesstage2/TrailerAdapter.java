@@ -13,9 +13,8 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 /**
- * Created by faumeier on 14.03.2017.
+ * Adapter holding the Trailers.
  */
-
 public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerViewHolder> {
 
     private static final String TAG = TrailerAdapter.class.getSimpleName();

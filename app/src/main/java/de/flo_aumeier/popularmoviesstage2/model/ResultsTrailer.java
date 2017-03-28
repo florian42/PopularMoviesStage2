@@ -1,27 +1,24 @@
 
 package de.flo_aumeier.popularmoviesstage2.model;
 
-import java.util.List;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class ResultsTrailer implements Parcelable
-{
+import java.util.List;
 
-    @SerializedName("id")
-    @Expose
-    private Integer id;
-    @SerializedName("results")
-    @Expose
-    private List<Trailer> results = null;
+/**
+ * Data object holding the response for the Trailers.
+ */
+public class ResultsTrailer implements Parcelable {
+
     public final static Creator<ResultsTrailer> CREATOR = new Creator<ResultsTrailer>() {
 
 
         @SuppressWarnings({
-            "unchecked"
+                "unchecked"
         })
         public ResultsTrailer createFromParcel(Parcel in) {
             ResultsTrailer instance = new ResultsTrailer();
@@ -34,8 +31,13 @@ public class ResultsTrailer implements Parcelable
             return (new ResultsTrailer[size]);
         }
 
-    }
-    ;
+    };
+    @SerializedName("id")
+    @Expose
+    private Integer id;
+    @SerializedName("results")
+    @Expose
+    private List<Trailer> results = null;
 
     public Integer getId() {
         return id;
@@ -69,7 +71,7 @@ public class ResultsTrailer implements Parcelable
     }
 
     public int describeContents() {
-        return  0;
+        return 0;
     }
 
 }

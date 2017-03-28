@@ -1,9 +1,8 @@
 package de.flo_aumeier.popularmoviesstage2.model.mock;
 
 /**
- * Created by Flo on 10.03.2017.
+ * Helper class holding mocked HttpResponses of themoviedb.
  */
-
 public class MockedHttpResponses {
     public static final String GET_TRAILERS_FOR_MOVIE_JSON_RESPONSE = "{\n" +
             "    \"id\": 263115,\n" +

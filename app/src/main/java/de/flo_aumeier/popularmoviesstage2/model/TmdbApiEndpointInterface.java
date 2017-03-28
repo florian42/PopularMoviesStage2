@@ -5,9 +5,8 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 
 /**
- * Created by Flo on 27.02.2017.
+ * Interface which specifies the api endpoint uris for themoviedb.
  */
-
 public interface TmdbApiEndpointInterface {
     String BASE_URL = "https://api.themoviedb.org/3/movie/";
 

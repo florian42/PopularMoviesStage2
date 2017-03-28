@@ -22,7 +22,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -51,12 +50,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 /*
 * Displays detailed information for a specific movie.
 */
-//TODO: In the movies detail screen, a user can tap a button(for example, a star) to mark it as a Favorite.
 public class MovieActivity extends AppCompatActivity implements TrailerAdapter.ListItemClickListener, ReviewAdapter.ListItemClickListener {
     private static final String TAG = MovieActivity.class.getSimpleName();
-    //https://img.youtube.com/vi/<insert-youtube-video-id-here>/default.jpg
-
-    private static final float THRESHOLD_PERCENTAGE = 0.2F;
 
     private ContentResolver mMoviesContentProvider;
 
@@ -177,8 +172,9 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
 
     private void removeFromFavouriteMovies() {
         // mDb.delete(FavouriteMovieContract.FavouriteMovieEntry.TABLE_NAME, FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_ID + "=" + mMovie.getId(), null);
-        final String selection = FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_ID + "=?";
-        mMoviesContentProvider.delete(FavouriteMovieContract.FavouriteMovieEntry.CONTENT_URI, selection, null);
+        //final String selection = FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_ID + "=" + mMovie.getId();
+        Uri uri = FavouriteMovieContract.FavouriteMovieEntry.CONTENT_URI.buildUpon().appendPath(mMovie.getId().toString()).build();
+        mMoviesContentProvider.delete(uri, null, null);
     }
 
     private void addNewFavouriteMovie(String title, int movieId) {
@@ -254,7 +250,6 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
 
     @Override
     public void onListItemClick(int clickedItemIndex) {
-        Toast.makeText(this, "Clicked: #" + clickedItemIndex, Toast.LENGTH_SHORT).show();
         final String baseUrl = "https://www.youtube.com/watch?v=";
         final String completeUrl = baseUrl + mTrailerUrls.get(clickedItemIndex);
         Intent playTrailerIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(completeUrl));
@@ -304,6 +299,5 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
 
     @Override
     public void onReviewAdapterListItemClick(int clickedItemIndex) {
-        Toast.makeText(this, "Clicked: #" + clickedItemIndex, Toast.LENGTH_SHORT).show();
     }
 }
