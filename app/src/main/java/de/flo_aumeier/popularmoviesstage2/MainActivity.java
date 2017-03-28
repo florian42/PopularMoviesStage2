@@ -19,7 +19,6 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import de.flo_aumeier.popularmoviesstage2.model.Movie;
@@ -179,7 +178,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
     }
 
     private void fetchBestRatedMovies() {
-        LinkedList<Movie> fetchedMovies = null;
         Log.d(TAG, "Fetching Best Rated Movies");
         showLoadingIndicator(true);
         Gson gson = new GsonBuilder().setLenient().create();

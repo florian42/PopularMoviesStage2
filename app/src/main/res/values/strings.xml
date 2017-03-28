@@ -19,4 +19,6 @@
     <string name="view_of_the_trailers">View of the trailers</string>
     <string name="expand_collapse_button_for_reviews">Expand/Collapse button for Reviews</string>
     <string name="settings">Settings</string>
+    <string name="movie_poster_description">Movie Poster</string>
+    <string name="thumbnail_of_the_trailer">Thumbnail of the Trailer</string>
 </resources>

@@ -1,30 +1,17 @@
 
 package de.flo_aumeier.popularmoviesstage2.model;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class Page implements Parcelable
 {
 
-    @SerializedName("page")
-    @Expose
-    private Integer page;
-    @SerializedName("results")
-    @Expose
-    private List<Movie> results = null;
-    @SerializedName("total_results")
-    @Expose
-    private Integer totalMovies;
-    @SerializedName("total_pages")
-    @Expose
-    private Integer totalPages;
     public final static Parcelable.Creator<Page> CREATOR = new Creator<Page>() {
 
 
@@ -46,6 +33,18 @@ public class Page implements Parcelable
 
     }
             ;
+    @SerializedName("page")
+    @Expose
+    private Integer page;
+    @SerializedName("results")
+    @Expose
+    private List<Movie> results = null;
+    @SerializedName("total_results")
+    @Expose
+    private Integer totalMovies;
+    @SerializedName("total_pages")
+    @Expose
+    private Integer totalPages;
 
     /**
      * No args constructor for use in serialization

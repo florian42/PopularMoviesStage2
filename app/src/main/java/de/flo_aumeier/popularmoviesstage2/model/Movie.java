@@ -1,18 +1,48 @@
 
 package de.flo_aumeier.popularmoviesstage2.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Movie implements Parcelable
 {
+    public final static Parcelable.Creator<Movie> CREATOR = new Creator<Movie>() {
+
+
+        @SuppressWarnings({
+                "unchecked"
+        })
+        public Movie createFromParcel(Parcel in) {
+            Movie instance = new Movie();
+            instance.posterPath = ((String) in.readValue((String.class.getClassLoader())));
+            instance.adult = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
+            instance.overview = ((String) in.readValue((String.class.getClassLoader())));
+            instance.releaseDate = ((String) in.readValue((String.class.getClassLoader())));
+            instance.setGenreIds(new ArrayList<Integer>());
+            in.readList(instance.genreIds, (java.lang.Integer.class.getClassLoader()));
+            instance.id = ((Integer) in.readValue((Integer.class.getClassLoader())));
+            instance.originalTitle = ((String) in.readValue((String.class.getClassLoader())));
+            instance.originalLanguage = ((String) in.readValue((String.class.getClassLoader())));
+            instance.title = ((String) in.readValue((String.class.getClassLoader())));
+            instance.backdropPath = ((String) in.readValue((String.class.getClassLoader())));
+            instance.popularity = ((Double) in.readValue((Double.class.getClassLoader())));
+            instance.voteCount = ((Integer) in.readValue((Integer.class.getClassLoader())));
+            instance.video = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
+            instance.voteAverage = ((Double) in.readValue((Double.class.getClassLoader())));
+            return instance;
+        }
+
+        public Movie[] newArray(int size) {
+            return (new Movie[size]);
+        }
+
+    };
     @SerializedName("poster_path")
     @Expose
     private String posterPath;
@@ -55,37 +85,6 @@ public class Movie implements Parcelable
     @SerializedName("vote_average")
     @Expose
     private Double voteAverage;
-    public final static Parcelable.Creator<Movie> CREATOR = new Creator<Movie>() {
-
-
-        @SuppressWarnings({
-                "unchecked"
-        })
-        public Movie createFromParcel(Parcel in) {
-            Movie instance = new Movie();
-            instance.posterPath = ((String) in.readValue((String.class.getClassLoader())));
-            instance.adult = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
-            instance.overview = ((String) in.readValue((String.class.getClassLoader())));
-            instance.releaseDate = ((String) in.readValue((String.class.getClassLoader())));
-            instance.setGenreIds(new ArrayList<Integer>());
-            in.readList(instance.genreIds, (java.lang.Integer.class.getClassLoader()));
-            instance.id = ((Integer) in.readValue((Integer.class.getClassLoader())));
-            instance.originalTitle = ((String) in.readValue((String.class.getClassLoader())));
-            instance.originalLanguage = ((String) in.readValue((String.class.getClassLoader())));
-            instance.title = ((String) in.readValue((String.class.getClassLoader())));
-            instance.backdropPath = ((String) in.readValue((String.class.getClassLoader())));
-            instance.popularity = ((Double) in.readValue((Double.class.getClassLoader())));
-            instance.voteCount = ((Integer) in.readValue((Integer.class.getClassLoader())));
-            instance.video = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
-            instance.voteAverage = ((Double) in.readValue((Double.class.getClassLoader())));
-            return instance;
-        }
-
-        public Movie[] newArray(int size) {
-            return (new Movie[size]);
-        }
-
-    };
 
     /**
      * No args constructor for use in serialization

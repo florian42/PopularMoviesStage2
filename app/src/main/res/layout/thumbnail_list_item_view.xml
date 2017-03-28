@@ -7,7 +7,7 @@
         android:id="@+id/iv_trailer_thumbnail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:contentDescription="Thumbnail of the Trailer"
+        android:contentDescription="@string/thumbnail_of_the_trailer"
         android:scaleType="centerCrop"/>
 
 </FrameLayout>

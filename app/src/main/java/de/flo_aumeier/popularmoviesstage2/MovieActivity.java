@@ -100,7 +100,6 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
         getXMLReferences();
         setupActionBar();
         final String baseURL = "https://image.tmdb.org/t/p/w185/";
-        final String completeURLtoBackdrop = baseURL + mMovie.getBackdropPath();
 
         mPlot.setText(mMovie.getOverview());
         mReleaseDate.setText(mMovie.getReleaseDate());
