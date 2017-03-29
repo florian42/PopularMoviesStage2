@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -25,6 +26,7 @@ import de.flo_aumeier.popularmoviesstage2.model.Movie;
 import de.flo_aumeier.popularmoviesstage2.model.Page;
 import de.flo_aumeier.popularmoviesstage2.model.TmdbApiEndpointInterface;
 import de.flo_aumeier.popularmoviesstage2.model.db.FavouriteMovieContract;
+import de.flo_aumeier.popularmoviesstage2.utils.NetworkUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -63,12 +65,35 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
                 spanCount);
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setHasFixedSize(true);
+        isOnline();
         if (savedInstanceState != null) {
             int sorting = savedInstanceState.getInt("sorting");
             displayLastView(sorting);
         } else {
             fetchPopularMovies();
         }
+    }
+
+    private boolean isOnline() {
+        if (!NetworkUtils.isOnline(this)) {
+            mRecyclerView.setVisibility(View.GONE);
+            showError(true);
+            return true;
+        } else {
+            showError(false);
+            return false;
+        }
+    }
+
+    private void showError(boolean showError) {
+        TextView textView = (TextView) findViewById(R.id.tv_error);
+        if (showError) {
+            textView.setVisibility(View.VISIBLE);
+        } else {
+            textView.setVisibility(View.GONE);
+        }
+
+
     }
 
     private void displayLastView(int sorting) {
@@ -130,28 +155,33 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int itemThatWasClickedId = item.getItemId();
-        switch (itemThatWasClickedId) {
-            case R.id.sort_order_best_rated:
-                if (mBestRatedMoviesAdapter == null) {
-                    fetchBestRatedMovies();
-                }
-                displayBestRatedMovies();
-                break;
-            case R.id.sort_order_most_popular:
-                if (mPopularMoviesAdapter == null) {
-                    fetchPopularMovies();
-                }
-                displayPopularMovies();
-                break;
-            case R.id.sort_order_favourite_movies:
-                if (mFavouriteMoviesAdapter == null) {
-                    fetchFavouriteMovies();
-                }
-                displayFavouriteMovies();
-                break;
+        if (isOnline()) {
+            int itemThatWasClickedId = item.getItemId();
+            switch (itemThatWasClickedId) {
+                case R.id.sort_order_best_rated:
+                    if (mBestRatedMoviesAdapter == null) {
+                        fetchBestRatedMovies();
+                    }
+                    displayBestRatedMovies();
+                    break;
+                case R.id.sort_order_most_popular:
+                    if (mPopularMoviesAdapter == null) {
+                        fetchPopularMovies();
+                    }
+                    displayPopularMovies();
+                    break;
+                case R.id.sort_order_favourite_movies:
+                    if (mFavouriteMoviesAdapter == null) {
+                        fetchFavouriteMovies();
+                    }
+                    displayFavouriteMovies();
+                    break;
 
+            }
+        } else {
+            showError(true);
         }
+
         return super.onOptionsItemSelected(item);
     }
 

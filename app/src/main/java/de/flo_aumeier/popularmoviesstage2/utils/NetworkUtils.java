@@ -14,17 +14,6 @@ import android.net.NetworkInfo;
 public class NetworkUtils {
     private static String TAG = NetworkUtils.class.getSimpleName();
 
-    private static final String THEMOVIEDB_BASE_URL = "https://api.themoviedb.org/3/movie";
-    private static final String API_KEY = "66c86590f283f43a95c4fff54da023dc";
-
-    private static final String PARAM_POPULAR_MOVIES = "popular";
-    private static final String PARAM_BEST_RATED_MOVIES = "top_rated";
-    private static final String PARAM_API_KEY = "api_key";
-    private static final String PARAM_LANGUAGE = "language";
-    private static final String LANGUAGE = "en-US";
-    private static final String PARAM_PAGE = "page";
-    private static final String PARAM_IMAGES = "images";
-
     /**
      * Checks if the user has currently a connection to the internet.
      * @param context
