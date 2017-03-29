@@ -1,6 +1,8 @@
 package de.flo_aumeier.popularmoviesstage2;
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -16,11 +18,13 @@ import android.widget.ProgressBar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import de.flo_aumeier.popularmoviesstage2.model.Movie;
 import de.flo_aumeier.popularmoviesstage2.model.Page;
 import de.flo_aumeier.popularmoviesstage2.model.TmdbApiEndpointInterface;
+import de.flo_aumeier.popularmoviesstage2.model.db.FavouriteMovieContract;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -39,7 +43,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
     private MovieAdapter mPopularMoviesAdapter;
     private MovieAdapter mBestRatedMoviesAdapter;
     private MovieAdapter mFavouriteMoviesAdapter;
-    private MovieAdapter mCurrentAdapter;
     private List<Movie> mMovies;
     private MainActivity mActivity;
 
@@ -104,7 +107,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
                 displayPopularMovies();
                 break;
             case R.id.sort_order_favourite_movies:
-                //TODO: display favourite movies view
+                if (mFavouriteMoviesAdapter == null) {
+                    fetchFavouriteMovies();
+                }
                 displayFavouriteMovies();
                 break;
 
@@ -113,45 +118,35 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
     }
 
     private void displayFavouriteMovies() {
-        if (mFavouriteMoviesAdapter == null) {
-            fetchFavouriteMovies();
+        if (mRecyclerView.getAdapter() == null) {
+            mRecyclerView.setAdapter(mFavouriteMoviesAdapter);
+        } else {
+            mRecyclerView.swapAdapter(mFavouriteMoviesAdapter, false);
         }
     }
 
     private void fetchFavouriteMovies() {
         Log.d(TAG, "Fetching Favourite Movies");
         showLoadingIndicator(true);
-        Gson gson = new GsonBuilder().setLenient().create();
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(TmdbApiEndpointInterface.BASE_URL)
-                .addConverterFactory
-                        (GsonConverterFactory.create(gson))
-                .build();
-        TmdbApiEndpointInterface endpointInterface = retrofit.create(TmdbApiEndpointInterface.class);
-        Call<Page> call = endpointInterface.getPopularMoviesPage1();
-        call.enqueue(new Callback<Page>() {
-            @Override
-            public void onResponse(Call<Page> call, Response<Page> response) {
-                if (response.isSuccessful()) {
-                    Page favouriteMovies = response.body();
-                    mMovies = favouriteMovies.getMovies();
-                    mFavouriteMoviesAdapter = new MovieAdapter(mActivity, mMovies);
-                    displayFavouriteMovies();
-                } else {
-                    Log.d(TAG, response.errorBody().toString());
-                }
-                showLoadingIndicator(false);
-
-            }
-
-
-            @Override
-            public void onFailure(Call<Page> call, Throwable t) {
-                Log.d(TAG, t.getMessage());
-            }
-
-
-        });
-
+        ContentResolver favouriteMoviesContentProvider = getContentResolver();
+        Cursor cursor = favouriteMoviesContentProvider.query(FavouriteMovieContract.FavouriteMovieEntry.CONTENT_URI, null, null, null, null);
+        mMovies = new LinkedList<>();
+        while (cursor.moveToNext()) {
+            String movieTitle = cursor.getString(cursor.getColumnIndex(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_TITLE));
+            int movieId = cursor.getInt(cursor.getColumnIndex(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_ID));
+            String posterPath = cursor.getString(cursor.getColumnIndex(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_POSTER_PATH));
+            String overview = cursor.getString(cursor.getColumnIndex(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_OVERVIEW));
+            String releaseDate = cursor.getString(cursor.getColumnIndex(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_RELEASE_DATE));
+            String backdropPath = cursor.getString(cursor.getColumnIndex(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_BACKDROP_PATH));
+            int voteCount = cursor.getInt(cursor.getColumnIndex(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_VOTE_COUNT));
+            double voteAverage = cursor.getDouble(cursor.getColumnIndex(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_VOTE_AVERAGE));
+            Movie favouriteMovie = new Movie(posterPath, overview, releaseDate, movieId, movieTitle, backdropPath, voteCount, voteAverage);
+            mMovies.add(favouriteMovie);
+        }
+        cursor.close();
+        mFavouriteMoviesAdapter = new MovieAdapter(this, mMovies);
+        showLoadingIndicator(false);
+        displayFavouriteMovies();
     }
 
     private void displayPopularMovies() {
@@ -160,7 +155,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
         } else {
             mRecyclerView.swapAdapter(mPopularMoviesAdapter, false);
         }
-        mCurrentAdapter = mPopularMoviesAdapter;
     }
 
     private void displayBestRatedMovies() {
@@ -169,7 +163,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
         } else {
             mRecyclerView.swapAdapter(mBestRatedMoviesAdapter, false);
         }
-        mCurrentAdapter = mBestRatedMoviesAdapter;
     }
 
     private void fetchPopularMovies() {
