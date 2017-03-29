@@ -139,25 +139,22 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
     private boolean isFavouriteMovie() {
 
         final Cursor cursor = mMoviesContentProvider.query(FavouriteMovieContract.FavouriteMovieEntry.CONTENT_URI, null, null, null, null);
-        int isFavouriteMovie = 0;
+        boolean isFavourite = false;
         try {
             assert cursor != null;
             while (cursor.moveToNext()) {
                 int movieIdColumnIndex = cursor.getColumnIndex(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_ID);
                 int movieId = cursor.getInt(movieIdColumnIndex);
                 if (movieId == mMovie.getId()) {
-                    int isFavouriteMovieColumnIndex = cursor.getColumnIndex(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_IS_FAVOURITE);
-                    isFavouriteMovie = cursor.getInt(isFavouriteMovieColumnIndex);
+                    isFavourite = true;
                 }
             }
 
         } finally {
             cursor.close();
         }
-        boolean isFavourite = false;
-        if (isFavouriteMovie == 1) {
-            isFavourite = true;
-        }
+
+
         return isFavourite;
     }
 
@@ -165,7 +162,7 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
         if (isFavouriteMovie()) {
             removeFromFavouriteMovies();
         } else {
-            addNewFavouriteMovie(mMovie.getTitle(), mMovie.getId());
+            addNewFavouriteMovie(mMovie);
         }
         setFavouriteButtonBackground();
     }
@@ -177,12 +174,26 @@ public class MovieActivity extends AppCompatActivity implements TrailerAdapter.L
         mMoviesContentProvider.delete(uri, null, null);
     }
 
-    private void addNewFavouriteMovie(String title, int movieId) {
+    private void addNewFavouriteMovie(Movie movie) {
+        String title = movie.getTitle();
+        int movieId = movie.getId();
+        String posterPath = movie.getPosterPath();
+        String overview = movie.getOverview();
+        String releaseDate = movie.getReleaseDate();
+        String backdropPath = movie.getBackdropPath();
+        int voteCount = movie.getVoteCount();
+        double voteAverage = movie.getVoteAverage();
+
 
         ContentValues cv = new ContentValues();
-        cv.put(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_ID, movieId);
         cv.put(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_TITLE, title);
-        cv.put(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_IS_FAVOURITE, true);
+        cv.put(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_ID, movieId);
+        cv.put(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_POSTER_PATH, posterPath);
+        cv.put(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_OVERVIEW, overview);
+        cv.put(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_RELEASE_DATE, releaseDate);
+        cv.put(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_BACKDROP_PATH, backdropPath);
+        cv.put(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_VOTE_COUNT, voteCount);
+        cv.put(FavouriteMovieContract.FavouriteMovieEntry.COLUMN_VOTE_AVERAGE, voteAverage);
         mMoviesContentProvider.insert(FavouriteMovieContract.FavouriteMovieEntry.CONTENT_URI, cv);
     }
 

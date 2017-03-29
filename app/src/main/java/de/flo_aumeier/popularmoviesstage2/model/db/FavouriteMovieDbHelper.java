@@ -27,9 +27,14 @@ public class FavouriteMovieDbHelper extends SQLiteOpenHelper {
         // Create a table to hold waitlist data
         final String SQL_CREATE_FAVOURITEMOVIES_TABLE = "CREATE TABLE " + FavouriteMovieContract.FavouriteMovieEntry.TABLE_NAME + " (" +
                 FavouriteMovieContract.FavouriteMovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL, " +
                 FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_TITLE + " TEXT NOT NULL, " +
-                FavouriteMovieContract.FavouriteMovieEntry.COLUMN_IS_FAVOURITE + " INTEGER NOT NULL" + "); ";
+                FavouriteMovieContract.FavouriteMovieEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL, " +
+                FavouriteMovieContract.FavouriteMovieEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +
+                FavouriteMovieContract.FavouriteMovieEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
+                FavouriteMovieContract.FavouriteMovieEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
+                FavouriteMovieContract.FavouriteMovieEntry.COLUMN_BACKDROP_PATH + " TEXT NOT NULL, " +
+                FavouriteMovieContract.FavouriteMovieEntry.COLUMN_VOTE_COUNT + " INTEGER NOT NULL, " +
+                FavouriteMovieContract.FavouriteMovieEntry.COLUMN_VOTE_AVERAGE + " REAL NOT NULL" + "); ";
         db.execSQL(SQL_CREATE_FAVOURITEMOVIES_TABLE);
     }
 

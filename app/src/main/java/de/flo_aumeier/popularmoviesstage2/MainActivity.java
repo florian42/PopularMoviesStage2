@@ -105,10 +105,53 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
                 break;
             case R.id.sort_order_favourite_movies:
                 //TODO: display favourite movies view
+                displayFavouriteMovies();
                 break;
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void displayFavouriteMovies() {
+        if (mFavouriteMoviesAdapter == null) {
+            fetchFavouriteMovies();
+        }
+    }
+
+    private void fetchFavouriteMovies() {
+        Log.d(TAG, "Fetching Favourite Movies");
+        showLoadingIndicator(true);
+        Gson gson = new GsonBuilder().setLenient().create();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(TmdbApiEndpointInterface.BASE_URL)
+                .addConverterFactory
+                        (GsonConverterFactory.create(gson))
+                .build();
+        TmdbApiEndpointInterface endpointInterface = retrofit.create(TmdbApiEndpointInterface.class);
+        Call<Page> call = endpointInterface.getPopularMoviesPage1();
+        call.enqueue(new Callback<Page>() {
+            @Override
+            public void onResponse(Call<Page> call, Response<Page> response) {
+                if (response.isSuccessful()) {
+                    Page favouriteMovies = response.body();
+                    mMovies = favouriteMovies.getMovies();
+                    mFavouriteMoviesAdapter = new MovieAdapter(mActivity, mMovies);
+                    displayFavouriteMovies();
+                } else {
+                    Log.d(TAG, response.errorBody().toString());
+                }
+                showLoadingIndicator(false);
+
+            }
+
+
+            @Override
+            public void onFailure(Call<Page> call, Throwable t) {
+                Log.d(TAG, t.getMessage());
+            }
+
+
+        });
+
     }
 
     private void displayPopularMovies() {
