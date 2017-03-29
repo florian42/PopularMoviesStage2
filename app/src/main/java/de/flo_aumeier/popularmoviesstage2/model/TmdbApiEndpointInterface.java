@@ -1,5 +1,6 @@
 package de.flo_aumeier.popularmoviesstage2.model;
 
+import de.flo_aumeier.popularmoviesstage2.BuildConfig;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -9,7 +10,7 @@ import retrofit2.http.Path;
  */
 public interface TmdbApiEndpointInterface {
     String BASE_URL = "https://api.themoviedb.org/3/movie/";
-    String API_KEY = "YOUR_API_KEY_HERE";
+    String API_KEY = BuildConfig.THE_MOVIE_DB_API_TOKEN;
 
     @GET("popular?api_key=" + API_KEY + "&language=en-US&page=1")
     Call<Page> getPopularMoviesPage1();
