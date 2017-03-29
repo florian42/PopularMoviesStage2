@@ -39,13 +39,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
 
     public static final String TAG = MainActivity.class.getSimpleName();
     public static final String INTENT_EXTRA_MOVIE = "EXTRA_MOVIE";
-
+    int mSorting;
     private MovieAdapter mPopularMoviesAdapter;
     private MovieAdapter mBestRatedMoviesAdapter;
     private MovieAdapter mFavouriteMoviesAdapter;
     private List<Movie> mMovies;
     private MainActivity mActivity;
-
     private RecyclerView mRecyclerView;
 
     private ProgressBar mLoadingIndicator;
@@ -64,7 +63,46 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
                 spanCount);
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setHasFixedSize(true);
-        fetchPopularMovies();
+        if (savedInstanceState != null) {
+            int sorting = savedInstanceState.getInt("sorting");
+            displayLastView(sorting);
+        } else {
+            fetchPopularMovies();
+        }
+    }
+
+    private void displayLastView(int sorting) {
+        switch (sorting) {
+            case 0:
+                fetchPopularMovies();
+                break;
+            case 1:
+                fetchBestRatedMovies();
+                break;
+            case 2:
+                fetchFavouriteMovies();
+                break;
+            default:
+                fetchPopularMovies();
+        }
+    }
+
+    private int getLastSorting() {
+        MovieAdapter lastAdapter = (MovieAdapter) mRecyclerView.getAdapter();
+        if (lastAdapter.equals(mPopularMoviesAdapter)) {
+            return 0;
+        } else if (lastAdapter.equals(mBestRatedMoviesAdapter)) {
+            return 1;
+        } else if (lastAdapter.equals(mFavouriteMoviesAdapter)) {
+            return 2;
+        }
+        return 0;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt("sorting", getLastSorting());
+        super.onSaveInstanceState(outState);
     }
 
     @Override
