@@ -1,10 +1,8 @@
 package de.flo_aumeier.popularmoviesstage2;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -33,13 +31,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Displays the main view in the app.
  */
 public class MainActivity extends AppCompatActivity implements MovieAdapter
-        .ListItemClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
+        .ListItemClickListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
     public static final String INTENT_EXTRA_MOVIE = "EXTRA_MOVIE";
 
     private MovieAdapter mPopularMoviesAdapter;
     private MovieAdapter mBestRatedMoviesAdapter;
+    private MovieAdapter mFavouriteMoviesAdapter;
     private List<Movie> mMovies;
     private MainActivity mActivity;
 
@@ -61,18 +60,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
                 spanCount);
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setHasFixedSize(true);
-        //fetchPopularMovies(); Überflüssig passiert durch die Settings
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        setSortOrder(sharedPreferences.getBoolean(getString(R.string.pref_short_sort_order),
-                getResources().getBoolean(R.bool.pref_sort_order_default)));
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+        fetchPopularMovies();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        PreferenceManager.getDefaultSharedPreferences(this)
-                .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -95,21 +88,42 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            Intent startSettingsActivity = new Intent(this, SettingsActivity.class);
-            startActivity(startSettingsActivity);
-            return true;
+        int itemThatWasClickedId = item.getItemId();
+        //TODO: Change sort order
+        switch (itemThatWasClickedId) {
+            case R.id.sort_order_best_rated:
+                if (mBestRatedMoviesAdapter == null) {
+                    fetchBestRatedMovies();
+                }
+                displayBestRatedMovies();
+                break;
+            case R.id.sort_order_most_popular:
+                if (mPopularMoviesAdapter == null) {
+                    fetchPopularMovies();
+                }
+                displayPopularMovies();
+                break;
+            case R.id.sort_order_favourite_movies:
+                //TODO: display favourite movies view
+                break;
+
         }
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(R.string.pref_short_sort_order)) {
-            Boolean sortBestRated = sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool
-                    .pref_sort_order_default));
-            setSortOrder(sortBestRated);
+    private void displayPopularMovies() {
+        if (mRecyclerView.getAdapter() == null) {
+            mRecyclerView.setAdapter(mPopularMoviesAdapter);
+        } else {
+            mRecyclerView.swapAdapter(mPopularMoviesAdapter, false);
+        }
+    }
+
+    private void displayBestRatedMovies() {
+        if (mRecyclerView.getAdapter() == null) {
+            mRecyclerView.setAdapter(mBestRatedMoviesAdapter);
+        } else {
+            mRecyclerView.swapAdapter(mBestRatedMoviesAdapter, false);
         }
     }
 
@@ -129,14 +143,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
                 if (response.isSuccessful()) {
                     Page popularMovies = response.body();
                     mMovies = popularMovies.getMovies();
-                    if (null == mPopularMoviesAdapter) {
-                        mPopularMoviesAdapter = new MovieAdapter(mActivity, mMovies);
-                    }
-                    if (mRecyclerView.getAdapter() == null) {
-                        mRecyclerView.setAdapter(mPopularMoviesAdapter);
-                    } else {
-                        mRecyclerView.swapAdapter(mPopularMoviesAdapter, false);
-                    }
+                    mPopularMoviesAdapter = new MovieAdapter(mActivity, mMovies);
+                    displayPopularMovies();
                 } else {
                     Log.d(TAG, response.errorBody().toString());
                 }
@@ -152,30 +160,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
 
 
         });
-    }
-
-    private void showLoadingIndicator(boolean show) {
-        if (show) {
-            mRecyclerView.setVisibility(View.GONE);
-            mLoadingIndicator.setVisibility(View.VISIBLE);
-        } else {
-            mLoadingIndicator.setVisibility(View.GONE);
-            mRecyclerView.setVisibility(View.VISIBLE);
-        }
-    }
-
-    /**
-     * Sets the sortOrder to best Rated if sortOrderBestRated = true
-     *
-     * @param sortOrderBestRated
-     */
-    private void setSortOrder(Boolean sortOrderBestRated) {
-        Log.d(TAG, "Sorting Best Rated Movies: " + sortOrderBestRated);
-        if (sortOrderBestRated) {
-            fetchBestRatedMovies();
-        } else {
-            fetchPopularMovies();
-        }
     }
 
     private void fetchBestRatedMovies() {
@@ -194,14 +178,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
                 if (response.isSuccessful()) {
                     Page bestRatedMoviesPage = response.body();
                     mMovies = bestRatedMoviesPage.getMovies();
-                    if (null == mBestRatedMoviesAdapter) {
-                        mBestRatedMoviesAdapter = new MovieAdapter(mActivity, mMovies);
-                    }
-                    if (mRecyclerView.getAdapter() == null) {
-                        mRecyclerView.setAdapter(mBestRatedMoviesAdapter);
-                    } else {
-                        mRecyclerView.swapAdapter(mBestRatedMoviesAdapter, false);
-                    }
+                    mBestRatedMoviesAdapter = new MovieAdapter(mActivity, mMovies);
+                    displayBestRatedMovies();
                 } else {
                     Log.d(TAG, response.errorBody().toString());
                 }
@@ -216,5 +194,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
 
         });
 
+    }
+
+    private void showLoadingIndicator(boolean show) {
+        if (show) {
+            mRecyclerView.setVisibility(View.GONE);
+            mLoadingIndicator.setVisibility(View.VISIBLE);
+        } else {
+            mLoadingIndicator.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
+        }
     }
 }
