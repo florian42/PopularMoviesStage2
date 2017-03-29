@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
     private MovieAdapter mPopularMoviesAdapter;
     private MovieAdapter mBestRatedMoviesAdapter;
     private MovieAdapter mFavouriteMoviesAdapter;
+    private MovieAdapter mCurrentAdapter;
     private List<Movie> mMovies;
     private MainActivity mActivity;
 
@@ -89,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemThatWasClickedId = item.getItemId();
-        //TODO: Change sort order
         switch (itemThatWasClickedId) {
             case R.id.sort_order_best_rated:
                 if (mBestRatedMoviesAdapter == null) {
@@ -117,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
         } else {
             mRecyclerView.swapAdapter(mPopularMoviesAdapter, false);
         }
+        mCurrentAdapter = mPopularMoviesAdapter;
     }
 
     private void displayBestRatedMovies() {
@@ -125,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
         } else {
             mRecyclerView.swapAdapter(mBestRatedMoviesAdapter, false);
         }
+        mCurrentAdapter = mBestRatedMoviesAdapter;
     }
 
     private void fetchPopularMovies() {
