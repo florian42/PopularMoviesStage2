@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
     >
     <item
         android:id="@+id/sort_order_most_popular"
@@ -13,7 +14,9 @@
     </item>
     <item
         android:id="@+id/sort_order_favourite_movies"
+        android:icon="@drawable/ic_favorite_black_24dp"
         android:orderInCategory="4"
-        android:title="@string/favourite_movies">
+        android:title="@string/favourite_movies"
+        app:showAsAction="always">
     </item>
 </menu>
