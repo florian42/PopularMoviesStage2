@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
                 spanCount);
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setHasFixedSize(true);
-        isOnline();
         if (savedInstanceState != null) {
             int sorting = savedInstanceState.getInt("sorting");
             displayLastView(sorting);
@@ -78,10 +77,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
         if (!NetworkUtils.isOnline(this)) {
             mRecyclerView.setVisibility(View.GONE);
             showError(true);
-            return true;
+            return false;
         } else {
             showError(false);
-            return false;
+            return true;
         }
     }
 
@@ -155,37 +154,33 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (isOnline()) {
-            int itemThatWasClickedId = item.getItemId();
-            switch (itemThatWasClickedId) {
-                case R.id.sort_order_best_rated:
-                    if (mBestRatedMoviesAdapter == null) {
-                        fetchBestRatedMovies();
-                    }
-                    displayBestRatedMovies();
-                    break;
-                case R.id.sort_order_most_popular:
-                    if (mPopularMoviesAdapter == null) {
-                        fetchPopularMovies();
-                    }
-                    displayPopularMovies();
-                    break;
-                case R.id.sort_order_favourite_movies:
-                    if (mFavouriteMoviesAdapter == null) {
-                        fetchFavouriteMovies();
-                    }
-                    displayFavouriteMovies();
-                    break;
-
-            }
-        } else {
-            showError(true);
+        int itemThatWasClickedId = item.getItemId();
+        switch (itemThatWasClickedId) {
+            case R.id.sort_order_best_rated:
+                if (mBestRatedMoviesAdapter == null) {
+                    fetchBestRatedMovies();
+                }
+                displayBestRatedMovies();
+                break;
+            case R.id.sort_order_most_popular:
+                if (mPopularMoviesAdapter == null) {
+                    fetchPopularMovies();
+                }
+                displayPopularMovies();
+                break;
+            case R.id.sort_order_favourite_movies:
+                if (mFavouriteMoviesAdapter == null) {
+                    fetchFavouriteMovies();
+                }
+                displayFavouriteMovies();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
     private void displayFavouriteMovies() {
+        showError(false);
         if (mRecyclerView.getAdapter() == null) {
             mRecyclerView.setAdapter(mFavouriteMoviesAdapter);
         } else {
@@ -235,70 +230,81 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter
 
     private void fetchPopularMovies() {
         Log.d(TAG, "Fetching Popular Movies");
-        showLoadingIndicator(true);
-        Gson gson = new GsonBuilder().setLenient().create();
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(TmdbApiEndpointInterface.BASE_URL)
-                .addConverterFactory
-                        (GsonConverterFactory.create(gson))
-                .build();
-        TmdbApiEndpointInterface endpointInterface = retrofit.create(TmdbApiEndpointInterface.class);
-        Call<Page> call = endpointInterface.getPopularMoviesPage1();
-        call.enqueue(new Callback<Page>() {
-            @Override
-            public void onResponse(Call<Page> call, Response<Page> response) {
-                if (response.isSuccessful()) {
-                    Page popularMovies = response.body();
-                    mMovies = popularMovies.getMovies();
-                    mPopularMoviesAdapter = new MovieAdapter(mActivity, mMovies);
-                    displayPopularMovies();
-                } else {
-                    Log.d(TAG, response.errorBody().toString());
+        if (isOnline()) {
+            showError(false);
+            showLoadingIndicator(true);
+            Gson gson = new GsonBuilder().setLenient().create();
+            Retrofit retrofit = new Retrofit.Builder().baseUrl(TmdbApiEndpointInterface.BASE_URL)
+                    .addConverterFactory
+                            (GsonConverterFactory.create(gson))
+                    .build();
+            TmdbApiEndpointInterface endpointInterface = retrofit.create(TmdbApiEndpointInterface.class);
+            Call<Page> call = endpointInterface.getPopularMoviesPage1();
+            call.enqueue(new Callback<Page>() {
+                @Override
+                public void onResponse(Call<Page> call, Response<Page> response) {
+                    if (response.isSuccessful()) {
+                        Page popularMovies = response.body();
+                        mMovies = popularMovies.getMovies();
+                        mPopularMoviesAdapter = new MovieAdapter(mActivity, mMovies);
+                        displayPopularMovies();
+                    } else {
+                        Log.d(TAG, response.errorBody().toString());
+                    }
+                    showLoadingIndicator(false);
+
                 }
-                showLoadingIndicator(false);
-
-            }
 
 
-            @Override
-            public void onFailure(Call<Page> call, Throwable t) {
-                Log.d(TAG, t.getMessage());
-            }
+                @Override
+                public void onFailure(Call<Page> call, Throwable t) {
+                    Log.d(TAG, t.getMessage());
+                }
 
 
-        });
+            });
+        } else {
+            showError(true);
+        }
+
     }
 
     private void fetchBestRatedMovies() {
         Log.d(TAG, "Fetching Best Rated Movies");
-        showLoadingIndicator(true);
-        Gson gson = new GsonBuilder().setLenient().create();
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(TmdbApiEndpointInterface.BASE_URL)
-                .addConverterFactory
-                        (GsonConverterFactory.create(gson))
-                .build();
-        TmdbApiEndpointInterface endpointInterface = retrofit.create(TmdbApiEndpointInterface.class);
-        Call<Page> call = endpointInterface.getBestRatedMoviesPage1();
-        call.enqueue(new Callback<Page>() {
-            @Override
-            public void onResponse(Call<Page> call, Response<Page> response) {
-                if (response.isSuccessful()) {
-                    Page bestRatedMoviesPage = response.body();
-                    mMovies = bestRatedMoviesPage.getMovies();
-                    mBestRatedMoviesAdapter = new MovieAdapter(mActivity, mMovies);
-                    displayBestRatedMovies();
-                } else {
-                    Log.d(TAG, response.errorBody().toString());
+        if (isOnline()) {
+            showError(false);
+            showLoadingIndicator(true);
+            Gson gson = new GsonBuilder().setLenient().create();
+            Retrofit retrofit = new Retrofit.Builder().baseUrl(TmdbApiEndpointInterface.BASE_URL)
+                    .addConverterFactory
+                            (GsonConverterFactory.create(gson))
+                    .build();
+            TmdbApiEndpointInterface endpointInterface = retrofit.create(TmdbApiEndpointInterface.class);
+            Call<Page> call = endpointInterface.getBestRatedMoviesPage1();
+            call.enqueue(new Callback<Page>() {
+                @Override
+                public void onResponse(Call<Page> call, Response<Page> response) {
+                    if (response.isSuccessful()) {
+                        Page bestRatedMoviesPage = response.body();
+                        mMovies = bestRatedMoviesPage.getMovies();
+                        mBestRatedMoviesAdapter = new MovieAdapter(mActivity, mMovies);
+                        displayBestRatedMovies();
+                    } else {
+                        Log.d(TAG, response.errorBody().toString());
+                    }
+                    showLoadingIndicator(false);
                 }
-                showLoadingIndicator(false);
-            }
 
-            @Override
-            public void onFailure(Call<Page> call, Throwable t) {
-                Log.d(TAG, t.getMessage());
-            }
+                @Override
+                public void onFailure(Call<Page> call, Throwable t) {
+                    Log.d(TAG, t.getMessage());
+                }
 
 
-        });
+            });
+        } else {
+            showError(true);
+        }
 
     }
 
